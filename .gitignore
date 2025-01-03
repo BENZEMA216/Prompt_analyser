@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+venv39/
+.gradio/
+
+# 数据和结果文件
+*.csv
+*.zip
+analysis_results_*/
+prompt_analysis_report_*/
+
+# 系统文件
+.DS_Store

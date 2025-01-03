@@ -165,6 +165,10 @@ class PromptAnalyzer:
             traceback.print_exc()
             return None
 
+    def check_models(self):
+        """检查模型是否正确加载"""
+        return self.kw_model is not None and self.st_model is not None
+
 def generate_html_report(analysis_results, output_dir):
     """生成可视化HTML报告"""
     os.makedirs(output_dir, exist_ok=True)

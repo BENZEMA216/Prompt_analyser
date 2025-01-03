@@ -1,0 +1,13 @@
+torch>=1.9.0
+sentence-transformers>=2.2.0
+pandas>=1.3.0
+scikit-learn>=0.24.2
+numpy>=1.21.0
+jieba>=0.42.1
+keybert>=0.5.0
+seaborn>=0.11.2
+matplotlib>=3.4.3
+gradio>=3.50.0
+tqdm>=4.65.0
+difflib
+warnings

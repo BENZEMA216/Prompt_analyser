@@ -9,5 +9,3 @@ seaborn>=0.11.2
 matplotlib>=3.4.3
 gradio>=3.50.0
 tqdm>=4.65.0
-difflib
-warnings

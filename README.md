@@ -25,8 +25,4 @@ pinned: false
 3. 点击"开始分析"
 4. 查看聚类结果
 
-## 访问方式
-用户名：admin
-密码：password
-
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference 

@@ -43,6 +43,72 @@ class PromptAnalysisApp:
             self.logger.error(f"加载CSV文件时出错: {str(e)}")
             return gr.Dropdown(choices=[], value=None, label="加载文件失败")
 
+    def analyze_user(self, user_id):
+        """分析用户数据"""
+        try:
+            if self.df is None:
+                return "请先上传CSV文件", "未加载数据"
+            if user_id is None:
+                return "请选择用户", "未选择用户"
+
+            # 获取用户数据
+            user_data = self.df[self.df['用户UID'].astype(str) == str(user_id)]
+            
+            # 准备数据
+            temp_df = pd.DataFrame({
+                'prompt': user_data['prompt'],
+                'timestamp': user_data['生成时间(精确到秒)'],
+                '生成结果预览图': user_data['生成结果预览图'],
+                'is_saved': user_data['是否双端采纳(下载、复制、发布、后编辑、生视频、作为参考图、去画布)'].fillna(0).astype(int) == 1
+            })
+
+            # 分析数据
+            results = self.analyzer.analyze_user_prompts(temp_df, str(user_id))
+            if results is None:
+                return "分析失败", "分析过程出错"
+
+            # 生成HTML展示
+            html_output = self.generate_analysis_view(results)
+            return html_output, "分析完成"
+
+        except Exception as e:
+            self.logger.error(f"分析用户数据时出错: {str(e)}")
+            return f"分析出错: {str(e)}", str(e)
+
+    def generate_analysis_view(self, results):
+        """生成分析结果的HTML视图"""
+        html = """
+        <style>
+        .prompt-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .preview-image {
+            max-width: 200px;
+            margin-top: 10px;
+        }
+        </style>
+        """
+        
+        for cluster_id, prompts in results['clusters'].items():
+            html += f"<h3>聚类 {cluster_id} ({len(prompts)} 条Prompt)</h3>"
+            for p in prompts:
+                html += f"""
+                <div class="prompt-card">
+                    <div class="timestamp">{p['timestamp']}</div>
+                    <div class="prompt-text">{p['prompt']}</div>
+                    <img class="preview-image" src="{p['preview_url']}" alt="预览图">
+                </div>
+                """
+        
+        return html
+
 def create_ui():
     app = PromptAnalysisApp()
     
@@ -66,17 +132,22 @@ def create_ui():
             inputs=[file_input],
             outputs=[user_dropdown]
         )
+        
+        analyze_btn.click(
+            fn=app.analyze_user,
+            inputs=[user_dropdown],
+            outputs=[output, debug_output]
+        )
 
     return interface
 
 # 创建界面
 interface = create_ui()
 
-# 启动应用
+# 启动应用（移除密码验证）
 if __name__ == "__main__":
     interface.launch(
         server_name="0.0.0.0",
         server_port=7860,
-        auth=("admin", "password"),
         debug=False
     ) 

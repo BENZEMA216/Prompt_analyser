@@ -1,0 +1,65 @@
+2025-01-04 21:08:55,860 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-04 21:08:55,861 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-04 21:09:00,119 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-04 21:09:00,119 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-04 21:09:06,867 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-04 21:09:06,925 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-04 21:09:06,946 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-04 21:09:06,954 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-04 21:09:07,677 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-04 21:13:31,858 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-04 21:13:31,860 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-04 21:13:32,625 - jieba - DEBUG - Loading model cost 0.766 seconds.
+2025-01-04 21:13:32,626 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-05 14:18:32,207 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-05 14:18:32,208 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-05 14:18:37,511 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-05 14:18:37,519 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-05 14:18:43,119 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-05 14:18:43,134 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-05 14:18:43,317 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-05 14:18:43,502 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-05 14:18:43,897 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-05 14:19:41,867 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-05 14:19:41,868 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-05 14:19:42,166 - jieba - DEBUG - Loading model cost 0.298 seconds.
+2025-01-05 14:19:42,168 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-05 17:32:54,260 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-05 17:32:54,260 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-05 17:32:57,724 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-05 17:32:57,724 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-05 17:33:02,528 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-05 17:33:02,542 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-05 17:33:02,783 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-05 17:33:03,058 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-05 17:33:03,476 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-05 17:34:13,705 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-05 17:34:13,707 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-05 17:34:14,181 - jieba - DEBUG - Loading model cost 0.475 seconds.
+2025-01-05 17:34:14,181 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-05 19:20:16,481 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-05 19:20:16,481 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-05 19:20:19,578 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-05 19:20:19,578 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-05 19:20:23,508 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-05 19:20:23,519 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-05 19:20:23,916 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-05 19:20:24,133 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-05 19:20:24,346 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-05 19:21:38,888 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-05 19:21:38,889 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-05 19:21:39,148 - jieba - DEBUG - Loading model cost 0.259 seconds.
+2025-01-05 19:21:39,148 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-05 21:47:38,177 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-05 21:47:38,177 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-05 21:47:41,277 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-05 21:47:41,277 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-05 21:47:45,030 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-05 21:47:45,041 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-05 21:47:45,704 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-05 21:47:45,707 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-05 21:47:46,017 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-05 21:49:47,514 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-05 21:49:47,516 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-05 21:49:47,769 - jieba - DEBUG - Loading model cost 0.253 seconds.
+2025-01-05 21:49:47,769 - jieba - DEBUG - Prefix dict has been built successfully.

@@ -118,14 +118,21 @@ class PromptAnalyzer:
         """分析用户的prompts"""
         try:
             print(f"开始分析用户 {user_id} 的 {len(df)} 条prompt")
-            print(f"DataFrame 列名: {df.columns.tolist()}")  # 调试信息
+            print(f"DataFrame 列名: {df.columns.tolist()}")
             
-            # 验证必要的列是否存在
-            required_columns = ['prompt', 'timestamp', '生成结果预览图', 'is_saved']
+            # 验证必要的列
+            required_columns = ['prompt', 'timestamp', 'preview_url', 'saved_images', 'enter_from']  # 添加 enter_from
             if not all(col in df.columns for col in required_columns):
                 missing = [col for col in required_columns if col not in df.columns]
                 print(f"缺少必要的列: {missing}")
                 return None
+            
+            # 打印数据样本
+            print("\n=== 数据样本 ===")
+            sample_cols = ['prompt', 'timestamp', 'preview_url']
+            if 'reference_img' in df.columns:
+                sample_cols.append('reference_img')
+            print(df[sample_cols].head())
             
             # 获取有效的prompts
             valid_prompts = df['prompt'].tolist()
@@ -144,24 +151,29 @@ class PromptAnalyzer:
                 clusters[cluster_id] = []
                 for idx in indices:
                     prompt_data = df.iloc[idx]
-                    clusters[cluster_id].append({
+                    cluster_item = {
                         'prompt': prompt_data['prompt'],
-                        'timestamp': prompt_data['timestamp'],  # 使用统一的timestamp字段
-                        'preview_url': prompt_data['生成结果预览图'],
-                        'is_saved': prompt_data['is_saved']
-                    })
+                        'timestamp': prompt_data['timestamp'],
+                        'preview_url': prompt_data['preview_url'],
+                        'saved_images': prompt_data['saved_images'],
+                        'enter_from': prompt_data['enter_from']  # 确保包含生成来源
+                    }
+                    # 添加垫图（如果存在）
+                    if 'reference_img' in prompt_data and pd.notna(prompt_data['reference_img']):
+                        cluster_item['reference_img'] = prompt_data['reference_img']
+                        print(f"聚类 {cluster_id} 添加垫图: {prompt_data['reference_img']}")
+                    
+                    clusters[cluster_id].append(cluster_item)
             
             return {
                 'clusters': clusters,
                 'changes': self.track_prompt_changes(
                     df['prompt'].tolist(),
-                    df['timestamp'].tolist()  # 使用统一的timestamp字段
+                    df['timestamp'].tolist()
                 )
             }
-            
         except Exception as e:
             print(f"分析用户prompts时出错: {str(e)}")
-            import traceback
             traceback.print_exc()
             return None
 

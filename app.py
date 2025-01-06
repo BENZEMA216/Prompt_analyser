@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 import traceback
 import logging
+import jieba
 
 # 配置日志
 logging.basicConfig(
@@ -78,15 +79,19 @@ class PromptAnalysisApp:
                 return "CSV文件缺少时间字段: 需要 'p_date' 或 '生成时间(精确到秒)'"
             
             # 检查必要的列是否存在
-            required_columns = ['prompt', '生成结果预览图']
-            missing_columns = [col for col in required_columns if col not in user_data.columns]
-            if missing_columns:
-                return f"CSV文件缺少必要的列: {', '.join(missing_columns)}"
+            if '生成结果预览图' not in user_data.columns:
+                return "CSV文件缺少必要的列: 生成结果预览图"
             
-            # 检查数据有效性
-            valid_data = user_data.dropna(subset=['prompt', time_column, '生成结果预览图'])
+            # 检查数据有效性 - 修改这里，不要过滤掉垫图
+            valid_data = user_data.dropna(subset=['prompt', time_column])
             if len(valid_data) == 0:
                 return f"用户 {user_id} 没有有效的Prompt数据"
+            
+            print("\n=== 数据验证 ===")
+            print(f"列名: {valid_data.columns.tolist()}")
+            print(f"垫图列存在: {'指令编辑垫图' in valid_data.columns}")
+            if '指令编辑垫图' in valid_data.columns:
+                print(f"有垫图的行数: {valid_data['指令编辑垫图'].notna().sum()}")
             
             print(f"找到 {len(valid_data)} 条有效数据")
             print(f"使用时间字段: {time_column}")
@@ -96,14 +101,52 @@ class PromptAnalysisApp:
             print(f"原始数据量: {len(user_data)}")
             print(f"有效数据量: {len(valid_data)}")
             
-            # 创建临时DataFrame
-            temp_df = pd.DataFrame({
-                '用户UID': valid_data['用户UID'],
-                'prompt': valid_data['prompt'],
-                'timestamp': valid_data[time_column],  # 使用检测到的时间字段
-                '生成结果预览图': valid_data['生成结果预览图'],
-                'is_saved': valid_data['是否双端采纳(下载、复制、发布、后编辑、生视频、作为参考图、去画布)'].fillna(0).astype(int) == 1
-            })
+            # 按时间和prompt分组时记录每张图片的保存状态
+            grouped_data = {}
+            for _, row in valid_data.iterrows():
+                key = (row[time_column], row['prompt'])
+                preview_url = row.get('生成结果预览图')
+                reference_img = row.get('指令编辑垫图') if pd.notna(row.get('指令编辑垫图')) else None
+                enter_from = row.get('生成来源（埋点enter_from）') if pd.notna(row.get('生成来源（埋点enter_from）')) else None
+                
+                print(f"\n处理行: prompt={row['prompt'][:30]}...")
+                print(f"垫图: {reference_img}")
+                
+                if key not in grouped_data:
+                    grouped_data[key] = {
+                        'timestamp': row[time_column],
+                        'prompt': row['prompt'],
+                        'preview_url': [preview_url] if pd.notna(preview_url) else [],
+                        'reference_img': reference_img,
+                        'saved_images': [row['是否双端采纳(下载、复制、发布、后编辑、生视频、作为参考图、去画布)']] if pd.notna(preview_url) else [],
+                        'enter_from': enter_from
+                    }
+                else:
+                    if pd.notna(preview_url):
+                        grouped_data[key]['preview_url'].append(preview_url)
+                        grouped_data[key]['saved_images'].append(row['是否双端采纳(下载、复制、发布、后编辑、生视频、作为参考图、去画布)'])
+            
+            # 打印分组后的数据
+            print("\n=== 分组后的数据 ===")
+            for key, data in grouped_data.items():
+                print(f"\n时间: {data['timestamp']}")
+                print(f"Prompt: {data['prompt']}")
+                print(f"垫图: {data['reference_img']}")
+                print(f"预览图数量: {len(data['preview_url'])}")
+            
+            # 转换为DataFrame
+            temp_df = pd.DataFrame([{
+                'timestamp': v['timestamp'],
+                'prompt': v['prompt'],
+                'preview_url': v['preview_url'],
+                'reference_img': v['reference_img'],
+                'saved_images': v['saved_images'],
+                'enter_from': v['enter_from']  # 确保包含生成来源
+            } for v in grouped_data.values() 
+            if v['preview_url']])  # 只保留有图片的数据
+            
+            if len(temp_df) == 0:
+                return "没有找到有效的图片数据"
             
             # 标准化时间格式
             try:
@@ -217,245 +260,275 @@ class PromptAnalysisApp:
         """返回样式HTML"""
         return """
         <style>
-        /* 全局文本颜色设置 */
-        .gradio-container,
-        .gradio-container * {
-            color: #000000 !important;
-        }
-        
-        /* Prompt 卡片样式 */
-        .gradio-container .prompt-card {
-            background: #ffffff !important;
-            border: 1px solid #e1e4e8 !important;
-            padding: 20px !important;
-        }
-        
-        /* Prompt 文本样式 */
-        .gradio-container .prompt-card .prompt-text,
-        .gradio-container .prompt-content .prompt-text {
-            color: #000000 !important;
-            font-size: 14px !important;
-            line-height: 1.6 !important;
-            font-weight: normal !important;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-            white-space: pre-wrap !important;
-            margin: 8px 0 !important;
-        }
-        
-        /* 时间戳样式 */
-        .gradio-container .prompt-card .timestamp {
-            color: #666666 !important;
-            font-size: 12px !important;
-        }
-        
-        /* 差异部分文本样式 */
-        .gradio-container .diff-section {
-            color: #000000 !important;
-        }
-        
-        .gradio-container .word-removed {
-            color: #b31d28 !important;
-        }
-        
-        .gradio-container .word-added {
-            color: #22863a !important;
-        }
-        
-        /* 标题样式 */
-        .gradio-container .section-title,
-        .gradio-container .cluster-title {
-            color: #000000 !important;
-            font-weight: 600 !important;
-        }
-        
-        .gradio-container .cluster-header {
-            color: #000000 !important;
-        }
-        
-        .gradio-container .cluster-count {
-            color: #0366d6 !important;  /* 聚类数量用蓝色 */
-        }
-        
-        /* 使用更高优先级的选择器 */
-        .gradio-container .prompt-card {
-            background: #ffffff !important;
-            border: 1px solid #e1e4e8;
-            border-radius: 8px;
+        /* 卡片基础样式 */
+        .prompt-card {
+            background: var(--background-fill-primary);
+            border: 1px solid var(--border-color-primary);
+            border-radius: 12px;
             padding: 20px;
             margin: 16px 0;
-            display: flex;
-            gap: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .gradio-container .prompt-content {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .gradio-container .prompt-image {
-            flex: 1;
-            max-width: 200px;
-            min-width: 150px;
-        }
-        
-        .gradio-container .prompt-image img {
-            width: 100%;
-            height: auto;
-            border-radius: 4px;
-            object-fit: cover;
-        }
-        
-        .gradio-container .diff-section {
-            margin-top: 12px;
+        /* 文本和背景样式 */
+        .prompt-text {
+            color: var(--body-text-color);
+            font-size: 15px;
+            line-height: 1.6;
+            margin: 12px 0;
             padding: 12px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border-left: 3px solid #0366d6;
-            color: #24292e;  /* 差异文本颜色 */
-        }
-        
-        .gradio-container .word-removed {
-            background-color: #ffeef0;  /* 浅粉红色背景，表示删除 */
-            color: #b31d28;  /* 深红色文字 */
-            border: 1px solid #f9d0d5;  /* 粉红色边框 */
-        }
-        
-        .gradio-container .word-added {
-            background-color: #e6ffed;  /* 浅绿色背景，表示新增 */
-            color: #22863a;  /* 深绿色文字 */
-            border: 1px solid #bef5cb;  /* 浅绿色边框 */
-        }
-        
-        .gradio-container .saved-badge {
-            background: #28a745;  /* 绿色背景，表示已保存状态 */
-            color: #ffffff;  /* 白色文字 */
-        }
-        
-        .gradio-container .nav-button {
-            display: inline-block;
-            padding: 8px 16px;
-            margin: 8px;
-            background: #ffffff;
-            border: 1px solid #e1e4e8;
-            border-radius: 6px;
-            color: #24292e;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .gradio-container .nav-button:hover {
-            background: #f6f8fa;
-            border-color: #0366d6;
-        }
-        
-        .gradio-container .cluster-filter {
-            margin: 20px 0;
-            padding: 10px;
-            background: #f8f9fa;
+            background: var(--background-fill-secondary);
             border-radius: 8px;
+            border: 1px solid var(--border-color-primary);
         }
         
-        .gradio-container .filter-active {
-            background: #f1f8ff;
-            border-left: 3px solid #0366d6;
+        /* 差异分析样式 */
+        .diff-section {
+            background: var(--background-fill-secondary);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid var(--primary-500);
         }
         
-        .gradio-container .saved-card {
-            border: 2px solid #28a745 !important;  /* 加重保存状态的边框 */
+        .version-text {
+            margin: 5px 0;
+            color: var(--body-text-color);
+            line-height: 1.6;
         }
         
-        .gradio-container .saved-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #28a745;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            z-index: 1;
-        }
-        
-        .gradio-container .stat-item.saved {
-            color: #28a745;
+        /* 差异文本颜色 */
+        .word-removed {
+            color: #ff7875;  /* 更亮的红色 */
+            background-color: rgba(255, 77, 79, 0.15);
+            padding: 0 4px;
+            border-radius: 3px;
             font-weight: 500;
         }
         
-        /* 调试边框 */
-        .debug-border * {
-            border: 1px solid red;
+        .word-added {
+            color: #73d13d;  /* 更亮的绿色 */
+            background-color: rgba(82, 196, 26, 0.15);
+            padding: 0 4px;
+            border-radius: 3px;
+            font-weight: 500;
         }
         
-        /* 下拉框样式 */
-        .gradio-dropdown {
-            width: 100% !important;
-            max-width: none !important;
+        /* 变更摘要样式 */
+        .change-summary {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color-primary);
+            font-size: 13px;
+            line-height: 1.6;
         }
         
-        /* 选项样式 */
-        .gradio-dropdown select {
-            width: 100% !important;
-            padding: 8px !important;
-            font-size: 14px !important;
+        .change-summary .word-removed {
+            margin-right: 6px;
         }
         
-        /* 确保选项可见 */
-        .gradio-dropdown option {
-            padding: 8px !important;
-            white-space: normal !important;
-            word-wrap: break-word !important;
+        .change-summary .word-added {
+            margin-left: 6px;
+        }
+        
+        /* 标签样式 */
+        .section-label {
+            color: var(--body-text-color);
+            font-size: 14px;
+            font-weight: 500;
+            margin: 15px 0 10px;
+            opacity: 0.9;
+        }
+        
+        /* 暗色模式特定样式 */
+        @media (prefers-color-scheme: dark) {
+            .prompt-card {
+                background: var(--background-fill-primary);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+            
+            .prompt-text {
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+            
+            .diff-section {
+                background: rgba(255, 255, 255, 0.05);
+                border-left-color: var(--primary-400);
+            }
+            
+            .word-removed {
+                color: #ff9c9c;  /* 暗色模式下更亮的红色 */
+                background-color: rgba(255, 77, 79, 0.2);
+            }
+            
+            .word-added {
+                color: #95eb6a;  /* 暗色模式下更亮的绿色 */
+                background-color: rgba(82, 196, 26, 0.2);
+            }
+            
+            .section-label {
+                color: rgba(255, 255, 255, 0.9);
+            }
+            
+            .image-error {
+                color: rgba(255, 255, 255, 0.7);
+                background: rgba(255, 255, 255, 0.1);
+            }
+            
+            .saved-badge {
+                background-color: var(--primary-400);
+            }
+        }
+        
+        /* 图片网格样式 */
+        .image-grid {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .image-row {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+        }
+        
+        .grid-image {
+            position: relative;
+            width: calc((100% - 48px) / 4);  /* 4列等宽，减去3个间隔的16px */
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--background-fill-secondary);
+            border: 1px solid var(--border-color-primary);
+        }
+        
+        .grid-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .saved-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: var(--primary-500);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .image-error {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--body-text-color-subdued);
+            font-size: 13px;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        /* 布局样式 */
+        .prompt-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+        
+        .prompt-col {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        /* 垫图样式调整 */
+        .reference-section {
+            width: 120px;
+            flex-shrink: 0;
+            background: var(--background-fill-secondary);
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid var(--border-color-primary);
+        }
+        
+        .reference-image {
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            border-radius: 4px;
+            background: var(--background-fill-primary);
+            margin: 0 auto;
+        }
+        
+        .reference-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 头部样式 */
+        .header-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .timestamp {
+            color: var(--body-text-color-subdued);
+            font-size: 13px;
+        }
+        
+        .enter-from {
+            color: var(--body-text-color-subdued);
+            font-size: 13px;
+            padding: 2px 8px;
+            background: var(--background-fill-secondary);
+            border-radius: 4px;
+            border: 1px solid var(--border-color-primary);
         }
         </style>
         """
     
     def generate_prompt_card(self, prompt, prev_prompt=None):
-        """生成单个Prompt卡片的HTML"""
         try:
-            is_saved = prompt.get('is_saved', False)
-            saved_class = 'saved-card' if is_saved else ''
+            # 添加调试日志
+            print("\n=== 生成Prompt卡片 ===")
+            print(f"时间戳: {prompt.get('timestamp')}")
+            print(f"生成来源: {prompt.get('enter_from')}")
+            
+            # 获取生成来源信息
+            enter_from = f'<span class="enter-from">{prompt.get("enter_from", "")}</span>' if prompt.get("enter_from") else ''
             
             html = f"""
-            <div class="prompt-card {saved_class}" style="position: relative;">
-                {f'<div class="saved-badge">已保存</div>' if is_saved else ''}
+            <div class="prompt-card">
                 <div class="prompt-content">
-                    <div class="timestamp">{prompt['timestamp']}</div>
-                    <div class="prompt-text">{prompt['prompt']}</div>
-            """
-            
-            # 添加差异分析
-            if prev_prompt:
-                diff = analyze_word_differences(prev_prompt['prompt'], prompt['prompt'])
-                if diff['prev_unique'] or diff['curr_unique']:
-                    html += '<div class="diff-section">'
-                    if diff['prev_unique']:
-                        html += f'<div style="margin-bottom:8px">删除: {", ".join(diff["prev_unique"])}</div>'
-                    if diff['curr_unique']:
-                        html += f'<div style="margin-bottom:8px">新增: {", ".join(diff["curr_unique"])}</div>'
-                    html += f'<div>当前版本: {diff["curr_html"]}</div>'
-                    html += '</div>'
-            
-            html += f"""
-                    <div class="prompt-stats">
-                        <div class="stat-item">
-                            <span>创建时间:</span>
-                            <span>{prompt['timestamp']}</span>
-                        </div>
-            """
-            
-            if is_saved:
-                html += """
-                        <div class="stat-item saved">
-                            <span>✓ 用户已保存</span>
-                        </div>
-                """
-            
-            html += f"""
+                    <div class="header-row">
+                        <div class="timestamp">{prompt['timestamp']}</div>
+                        {enter_from}
                     </div>
-                </div>
-                <div class="prompt-image">
-                    <img src="{prompt['preview_url']}" alt="预览图">
+                    
+                    <div class="prompt-row">
+                        <!-- 左侧 Prompt 部分 -->
+                        <div class="prompt-col">
+                            {self.generate_diff_section(prev_prompt, prompt) if prev_prompt else ''}
+                            <div class="prompt-text">{prompt["prompt"]}</div>
+                        </div>
+                        
+                        <!-- 右侧垫图部分 -->
+                        {self.generate_reference_section(prompt) if prompt.get('reference_img') and prompt['reference_img'].strip() else ''}
+                    </div>
+                    
+                    <!-- 生成结果展示 -->
+                    <div class="section-label">生成结果：</div>
+                    {self.generate_image_grid(prompt)}
                 </div>
             </div>
             """
@@ -463,6 +536,71 @@ class PromptAnalysisApp:
         except Exception as e:
             print(f"生成Prompt卡片时出错: {str(e)}")
             return ""
+
+    def generate_diff_section(self, prev_prompt, curr_prompt):
+        """生成差异分析部分的HTML"""
+        diff = analyze_word_differences(prev_prompt['prompt'], curr_prompt['prompt'])
+        if not (diff['prev_unique'] or diff['curr_unique']):
+            return ''
+        
+        return f"""
+        <div class="diff-section">
+            <div class="version-text">原始版本: {diff["prev_html"]}</div>
+            <div class="version-text current">当前版本: {diff["curr_html"]}</div>
+            <div class="change-summary">
+                {f'<span class="word-removed">删除: {", ".join(diff["prev_unique"])}</span>' if diff['prev_unique'] else ''}
+                {' | ' if diff['prev_unique'] and diff['curr_unique'] else ''}
+                {f'<span class="word-added">新增: {", ".join(diff["curr_unique"])}</span>' if diff['curr_unique'] else ''}
+            </div>
+        </div>
+        """
+
+    def generate_reference_section(self, prompt):
+        """生成垫图部分的HTML"""
+        if not (prompt.get('reference_img') and prompt['reference_img'].strip()):
+            return ''
+        
+        return f"""
+        <div class="reference-section">
+            <div class="section-label">
+                <span class="label-icon">📎</span> 参考图
+            </div>
+            <div class="reference-image">
+                <img src="{prompt['reference_img']}" alt="参考图" 
+                     onerror="this.parentElement.parentElement.style.display='none';">
+            </div>
+        </div>
+        """
+
+    def generate_image_grid(self, prompt):
+        """生成图片网格的HTML，确保1*4排列"""
+        preview_urls = prompt['preview_url'] if isinstance(prompt['preview_url'], list) else [prompt['preview_url']]
+        saved_images = prompt.get('saved_images', [])
+        if not isinstance(saved_images, list):
+            saved_images = [saved_images] * len(preview_urls)
+        
+        grid_html = '<div class="image-grid">'
+        
+        # 每4张图片一行
+        for i in range(0, len(preview_urls), 4):
+            grid_html += '<div class="image-row">'
+            row_urls = preview_urls[i:i+4]
+            row_saved = saved_images[i:i+4]
+            
+            for url, is_saved in zip(row_urls, row_saved):
+                if pd.notna(url) and url.strip():
+                    grid_html += f"""
+                    <div class="grid-image">
+                        {f'<div class="saved-badge">已保存</div>' if is_saved else ''}
+                        <img src="{url}" alt="预览图" 
+                             onerror="this.parentElement.innerHTML='<div class=\'image-error\'>图片加载失败</div>';">
+                    </div>
+                    """
+            
+            grid_html += '</div>'
+        
+        grid_html += '</div>'
+        return grid_html
 
     def generate_cluster_section(self, cluster_id, prompts):
         """生成聚类部分的HTML"""

@@ -121,18 +121,11 @@ class PromptAnalyzer:
             print(f"DataFrame 列名: {df.columns.tolist()}")
             
             # 验证必要的列
-            required_columns = ['prompt', 'timestamp', 'preview_url', 'saved_images', 'enter_from']  # 添加 enter_from
+            required_columns = ['prompt', 'timestamp', 'preview_url']
             if not all(col in df.columns for col in required_columns):
                 missing = [col for col in required_columns if col not in df.columns]
                 print(f"缺少必要的列: {missing}")
                 return None
-            
-            # 打印数据样本
-            print("\n=== 数据样本 ===")
-            sample_cols = ['prompt', 'timestamp', 'preview_url']
-            if 'reference_img' in df.columns:
-                sample_cols.append('reference_img')
-            print(df[sample_cols].head())
             
             # 获取有效的prompts
             valid_prompts = df['prompt'].tolist()
@@ -155,13 +148,15 @@ class PromptAnalyzer:
                         'prompt': prompt_data['prompt'],
                         'timestamp': prompt_data['timestamp'],
                         'preview_url': prompt_data['preview_url'],
-                        'saved_images': prompt_data['saved_images'],
-                        'enter_from': prompt_data['enter_from']  # 确保包含生成来源
+                        'saved_images': prompt_data.get('saved_images', False),
                     }
-                    # 添加垫图（如果存在）
+                    
+                    # 只在字段存在时添加
+                    if 'enter_from' in prompt_data:
+                        cluster_item['enter_from'] = prompt_data['enter_from']
+                        
                     if 'reference_img' in prompt_data and pd.notna(prompt_data['reference_img']):
                         cluster_item['reference_img'] = prompt_data['reference_img']
-                        print(f"聚类 {cluster_id} 添加垫图: {prompt_data['reference_img']}")
                     
                     clusters[cluster_id].append(cluster_item)
             
@@ -547,32 +542,21 @@ def analyze_word_differences(prev_prompt, curr_prompt):
     # 找出独特的词语
     prev_unique = prev_words - curr_words  # 在前一个prompt中独有的词
     curr_unique = curr_words - prev_words  # 在当前prompt中独有的词
-    common_words = prev_words & curr_words  # 共同的词
     
-    # 构建带标记的文本
-    prev_html = ''
+    # 构建带标记的HTML文本
     curr_html = ''
-    
-    # 处理前一个prompt
-    for word in jieba.cut(prev_prompt):
-        if word in prev_unique:
-            prev_html += f'<span class="word-removed">{word}</span>'
-        else:
-            prev_html += word
-            
-    # 处理当前prompt
     for word in jieba.cut(curr_prompt):
         if word in curr_unique:
             curr_html += f'<span class="word-added">{word}</span>'
+        elif word in prev_unique:
+            curr_html += f'<span class="word-removed">{word}</span>'
         else:
             curr_html += word
-            
+    
     return {
-        'prev_html': prev_html,
         'curr_html': curr_html,
         'prev_unique': list(prev_unique),
-        'curr_unique': list(curr_unique),
-        'common_words': list(common_words)
+        'curr_unique': list(curr_unique)
     }
 
 def main(csv_path, target_user_id="2012521685064170"):

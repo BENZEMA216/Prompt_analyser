@@ -63,3 +63,907 @@
 2025-01-05 21:49:47,516 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
 2025-01-05 21:49:47,769 - jieba - DEBUG - Loading model cost 0.253 seconds.
 2025-01-05 21:49:47,769 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 17:35:39,086 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 17:35:39,086 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 17:35:43,739 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 17:35:43,739 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 17:35:48,958 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 17:35:48,969 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 17:35:49,153 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 17:35:49,510 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 17:35:49,755 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 17:36:26,506 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 17:36:26,794 - jieba - DEBUG - Dumping model to file cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 17:36:26,821 - jieba - DEBUG - Loading model cost 0.314 seconds.
+2025-01-06 17:36:26,821 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 19:49:36,781 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:49:36,781 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 19:49:41,590 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:49:41,591 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 19:50:19,832 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:50:19,832 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 19:50:24,845 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:50:24,845 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 19:51:30,478 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:51:30,478 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 19:51:35,559 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:51:35,559 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 19:52:51,500 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:52:51,500 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 19:52:56,875 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:52:56,875 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 19:53:02,322 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 19:53:02,332 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 19:53:02,547 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 19:53:03,080 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 19:53:03,085 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 19:56:30,215 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:56:30,215 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 19:56:35,165 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:56:35,166 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 19:56:40,604 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 19:56:40,614 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 19:56:40,911 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 19:56:41,287 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 19:56:41,348 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 19:57:53,028 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:57:53,028 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 19:57:59,134 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 19:57:59,135 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 19:58:07,042 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 19:58:07,043 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 19:58:07,060 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 19:58:07,590 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 19:58:07,982 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 19:58:30,327 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 19:58:30,328 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 19:58:30,622 - jieba - DEBUG - Loading model cost 0.295 seconds.
+2025-01-06 19:58:30,622 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 20:01:36,037 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:01:36,038 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:01:42,646 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:01:42,646 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:01:49,236 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 20:01:49,247 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 20:01:49,354 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 20:01:49,949 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 20:01:50,915 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 20:02:02,962 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 20:02:02,963 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 20:02:03,224 - jieba - DEBUG - Loading model cost 0.261 seconds.
+2025-01-06 20:02:03,224 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 20:05:45,342 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:05:45,342 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:05:50,717 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:05:50,718 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:05:56,488 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 20:05:56,498 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 20:05:56,695 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 20:05:56,973 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 20:05:57,450 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 20:06:13,420 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 20:06:13,421 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 20:06:13,718 - jieba - DEBUG - Loading model cost 0.298 seconds.
+2025-01-06 20:06:13,719 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 20:08:07,260 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:08:07,260 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:08:12,319 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:08:12,319 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:08:18,164 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 20:08:18,173 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 20:08:18,442 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 20:08:18,800 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 20:08:19,085 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 20:08:32,524 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 20:08:32,525 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 20:08:32,792 - jieba - DEBUG - Loading model cost 0.267 seconds.
+2025-01-06 20:08:32,792 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 20:11:26,645 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:11:26,645 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:11:31,693 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:11:31,694 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:11:37,168 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 20:11:37,177 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 20:11:37,302 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 20:11:38,036 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 20:11:38,224 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 20:11:55,684 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 20:11:55,685 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 20:11:55,962 - jieba - DEBUG - Loading model cost 0.277 seconds.
+2025-01-06 20:11:55,962 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 20:14:57,343 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:14:57,343 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:15:03,041 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:15:03,042 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:15:41,635 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:15:41,636 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:15:46,455 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:15:46,455 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:16:00,072 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:16:00,072 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:16:04,598 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:16:04,598 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:16:49,224 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:16:49,224 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:16:53,986 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:16:53,986 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:18:50,289 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:18:50,290 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:18:55,050 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:18:55,050 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:20:27,936 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:20:27,937 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:20:33,144 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:20:33,145 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:21:15,112 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:21:15,112 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:21:20,726 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:21:20,727 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:22:18,517 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:22:18,517 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:22:23,958 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:22:23,958 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:22:44,801 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:22:44,802 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:22:51,007 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:22:51,007 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:22:56,712 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 20:22:56,723 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 20:22:56,940 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 20:22:57,201 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 20:22:57,478 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 20:23:13,675 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 20:23:13,676 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 20:23:13,996 - jieba - DEBUG - Loading model cost 0.320 seconds.
+2025-01-06 20:23:13,996 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 20:25:59,726 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:25:59,726 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:26:04,218 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:26:04,219 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:26:09,592 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 20:26:09,603 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 20:26:09,896 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 20:26:10,097 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 20:26:24,780 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 20:26:24,780 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 20:26:25,062 - jieba - DEBUG - Loading model cost 0.281 seconds.
+2025-01-06 20:26:25,062 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 20:26:40,495 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 20:29:52,534 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:29:52,534 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:29:57,254 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:29:57,254 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:30:02,543 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 20:30:02,552 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 20:30:03,175 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 20:30:03,203 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 20:30:03,302 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 20:30:18,923 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 20:30:18,929 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 20:30:19,177 - jieba - DEBUG - Loading model cost 0.248 seconds.
+2025-01-06 20:30:19,177 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 20:32:13,102 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:32:13,102 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:32:20,618 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:32:20,618 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:32:26,215 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 20:32:26,226 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 20:32:26,299 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 20:32:27,015 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 20:32:27,110 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 20:33:48,369 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:33:48,369 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:33:53,544 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:33:53,545 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:33:59,118 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 20:33:59,127 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 20:33:59,362 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 20:33:59,871 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 20:34:00,091 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 20:34:15,525 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 20:34:15,526 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 20:34:15,821 - jieba - DEBUG - Loading model cost 0.295 seconds.
+2025-01-06 20:34:15,821 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 20:39:38,010 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:39:38,010 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 20:39:42,699 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 20:39:42,699 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 20:39:48,075 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 20:39:48,084 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 20:39:48,290 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 20:39:48,761 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 20:39:49,065 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 20:40:08,319 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 20:40:08,320 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 20:40:08,590 - jieba - DEBUG - Loading model cost 0.270 seconds.
+2025-01-06 20:40:08,590 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 22:00:01,051 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:00:01,052 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:00:06,432 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:00:06,433 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:00:13,228 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:00:13,239 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:00:13,653 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:00:14,298 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:00:14,298 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 22:00:40,359 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 22:00:40,361 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 22:00:40,637 - jieba - DEBUG - Loading model cost 0.276 seconds.
+2025-01-06 22:00:40,637 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 22:02:28,400 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:02:28,401 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:02:33,736 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:02:33,736 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:02:39,734 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:02:39,744 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:02:39,952 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:02:40,539 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:02:40,619 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 22:10:45,433 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:10:45,434 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:10:50,272 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:10:50,273 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:10:56,329 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:10:56,338 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:10:56,583 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:10:56,746 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:10:57,233 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 22:11:22,709 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 22:11:22,710 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 22:11:22,994 - jieba - DEBUG - Loading model cost 0.284 seconds.
+2025-01-06 22:11:22,994 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 22:14:58,992 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:14:58,993 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:15:04,189 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:15:04,191 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:15:10,223 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:15:10,254 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:15:10,480 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:15:10,772 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:15:11,173 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 22:15:33,924 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 22:15:33,925 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 22:15:34,184 - jieba - DEBUG - Loading model cost 0.259 seconds.
+2025-01-06 22:15:34,184 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 22:17:46,803 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:17:46,803 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:17:51,673 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:17:51,673 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:17:57,233 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:17:57,259 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:17:57,388 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:17:57,841 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:17:58,071 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 22:19:05,523 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 22:19:05,524 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 22:19:05,775 - jieba - DEBUG - Loading model cost 0.251 seconds.
+2025-01-06 22:19:05,775 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 22:20:14,154 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:20:14,155 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:20:19,232 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:20:19,233 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:20:24,775 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:20:24,785 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:20:24,905 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:20:25,302 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:20:25,834 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 22:20:47,192 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 22:20:47,193 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 22:20:47,505 - jieba - DEBUG - Loading model cost 0.312 seconds.
+2025-01-06 22:20:47,505 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 22:27:41,166 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:27:41,167 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:27:46,045 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:27:46,046 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:27:51,482 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:27:51,491 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:27:51,805 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:27:52,122 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:27:52,417 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 22:28:12,809 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 22:28:12,810 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 22:28:13,078 - jieba - DEBUG - Loading model cost 0.268 seconds.
+2025-01-06 22:28:13,081 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 22:31:03,961 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:31:03,962 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:31:08,683 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:31:08,684 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:31:14,222 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:31:14,234 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:31:14,417 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:31:15,171 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 22:31:15,843 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:50:52,750 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:50:52,750 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:50:58,806 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:50:58,808 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:51:04,874 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:51:04,882 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:51:05,089 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:51:05,387 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:51:05,920 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 22:51:24,237 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-06 22:51:24,238 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-06 22:51:24,527 - jieba - DEBUG - Loading model cost 0.289 seconds.
+2025-01-06 22:51:24,528 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-06 22:55:02,043 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:55:02,044 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:55:08,990 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:55:08,990 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:55:15,237 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:55:15,246 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:55:15,435 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:55:15,913 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:55:16,044 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 22:57:34,213 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:57:34,213 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 22:57:40,492 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 22:57:40,492 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 22:57:47,360 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 22:57:47,371 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 22:57:47,704 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 22:57:47,867 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 22:57:48,313 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:00:51,834 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:00:51,834 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:00:56,832 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:00:56,832 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:01:02,238 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:01:02,248 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:01:02,327 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:01:03,003 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:01:03,046 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:04:34,798 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:04:34,798 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:04:39,685 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:04:39,685 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:04:45,085 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:04:45,096 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:04:45,337 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:04:45,602 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:04:46,027 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:07:22,609 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:07:22,610 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:07:27,537 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:07:27,538 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:07:32,886 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:07:32,894 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:07:33,142 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:07:33,578 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:07:33,904 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:11:05,515 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:11:05,515 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:11:10,749 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:11:10,749 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:11:16,835 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:11:16,849 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:11:17,192 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:11:17,525 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:11:19,570 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:13:44,964 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:13:44,965 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:13:50,033 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:13:50,034 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:13:55,467 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:13:55,479 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:13:56,012 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:13:56,373 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:13:57,218 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:16:14,054 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:16:14,054 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:16:19,037 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:16:19,038 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:16:25,112 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:16:25,124 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:16:25,175 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:16:25,572 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:16:25,880 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:18:26,471 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:18:26,471 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:18:31,638 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:18:31,639 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:18:37,129 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:18:37,140 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:18:37,528 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:18:37,615 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:18:38,175 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:21:00,917 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:21:00,917 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:21:05,676 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:21:05,676 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:21:11,273 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:21:11,282 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:21:11,611 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:21:12,032 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:21:12,785 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:27:03,788 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:27:03,789 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:27:08,889 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:27:08,889 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:27:14,219 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:27:14,230 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:27:14,304 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:27:14,914 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:27:15,188 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:30:50,396 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:30:50,397 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:30:55,653 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:30:55,654 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:31:01,134 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:31:01,143 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:31:01,359 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:31:01,821 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:31:01,882 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:33:29,367 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:33:29,367 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:33:34,109 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:33:34,109 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:33:39,519 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:33:39,529 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:33:39,713 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:33:40,206 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:33:40,416 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:34:54,644 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:34:54,644 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:34:59,647 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:34:59,647 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:35:05,077 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:35:05,086 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:35:05,175 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:35:05,804 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:35:06,225 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:37:06,779 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:37:06,780 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:37:12,031 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:37:12,031 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:37:17,906 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:37:18,395 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:38:13,417 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:38:13,417 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:38:18,757 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:38:18,758 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:38:24,351 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:38:24,873 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:39:21,200 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:39:21,200 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:39:25,991 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:39:25,992 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:39:32,095 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:39:32,445 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:40:06,375 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:40:06,376 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:40:11,683 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:40:11,683 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:40:17,863 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:40:18,244 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:41:17,299 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:41:17,299 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:41:22,929 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:41:22,930 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:41:29,071 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:41:29,083 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:41:29,151 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:41:29,668 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:41:30,188 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:43:42,520 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:43:42,521 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:43:47,321 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:43:47,321 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:43:52,660 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:43:52,671 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:43:52,874 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:43:53,376 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:43:53,415 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:45:31,133 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:45:31,133 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:45:36,243 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:45:36,243 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:45:41,790 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:45:41,799 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:45:42,240 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:45:42,462 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:45:42,553 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:47:08,247 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:47:08,247 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:47:13,506 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:47:13,507 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:47:19,477 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:47:19,487 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:47:19,544 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:47:19,978 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:47:20,345 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:48:35,495 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:48:35,496 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:48:40,367 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:48:40,367 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:48:46,004 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:48:46,013 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:48:46,243 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:48:46,699 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:48:46,893 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-06 23:49:50,352 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:49:50,352 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-06 23:49:55,635 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-06 23:49:55,636 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-06 23:50:01,043 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-06 23:50:01,053 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-06 23:50:01,135 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-06 23:50:01,537 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-06 23:50:01,820 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-07 11:49:54,373 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 11:49:54,373 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 11:49:59,057 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 11:49:59,059 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 11:50:04,382 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 11:50:04,392 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 11:50:04,591 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 11:50:04,886 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 11:50:05,155 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-07 11:51:54,330 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 11:51:54,331 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 11:51:59,168 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 11:51:59,168 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 11:52:04,461 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 11:52:04,470 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 11:52:04,563 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 11:52:05,014 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 11:52:05,305 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-07 11:53:48,557 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 11:53:48,558 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 11:53:53,099 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 11:53:53,100 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 11:53:58,469 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 11:53:58,486 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 11:53:58,499 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 11:53:58,898 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 11:53:59,404 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-07 12:29:09,335 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:29:09,335 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:29:14,370 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:29:14,370 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:29:20,427 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 12:29:20,436 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 12:29:20,708 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:29:21,078 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 12:29:21,238 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-07 12:30:46,254 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:30:46,254 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:30:51,241 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:30:51,242 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:30:56,545 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 12:30:56,555 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 12:30:56,671 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:30:57,090 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 12:30:57,413 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-07 12:32:31,053 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:32:31,053 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:32:36,041 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:32:36,041 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:32:41,270 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 12:32:41,279 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 12:32:41,362 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:32:41,744 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 12:32:42,047 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-07 12:34:42,027 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:34:42,027 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:34:46,963 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:34:46,963 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:34:52,863 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 12:34:52,873 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 12:34:53,059 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:34:53,384 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 12:34:53,623 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v2/tunnel-request "HTTP/1.1 200 OK"
+2025-01-07 12:37:41,287 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:37:41,288 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:37:45,957 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:37:45,957 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:37:51,662 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:37:51,753 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 12:38:34,581 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:38:34,581 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:38:39,321 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:38:39,322 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:38:44,677 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:38:45,096 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 12:39:55,409 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:39:55,409 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:40:00,787 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:40:00,788 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:40:06,149 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:40:06,651 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 12:40:41,755 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:40:41,756 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:40:46,143 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:40:46,143 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:40:51,366 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:40:51,764 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 12:41:57,898 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:41:57,898 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:42:02,352 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:42:02,352 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:42:07,644 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:42:08,059 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 12:50:07,974 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:50:07,975 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:50:13,675 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:50:13,676 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:50:21,256 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:50:21,579 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 12:56:06,488 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:56:06,489 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 12:56:12,844 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 12:56:12,844 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 12:56:21,535 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 12:56:22,474 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:40:14,362 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:40:14,362 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:40:19,248 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:40:19,249 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:40:25,598 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:40:25,897 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:40:58,799 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:40:58,799 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:41:03,303 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:41:03,304 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:41:09,343 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:41:09,876 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:41:40,356 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:41:40,356 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:41:45,230 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:41:45,230 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:41:50,322 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:41:50,331 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:41:50,664 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:41:50,684 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:41:51,019 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:42:18,619 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:42:18,619 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:42:23,156 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:42:23,157 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:42:28,998 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:42:29,010 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:42:29,333 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:42:29,464 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:42:29,633 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:42:55,153 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:42:55,154 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:42:59,826 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:42:59,826 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:43:05,127 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:43:05,153 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:43:05,195 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:43:05,522 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:43:05,672 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:43:42,784 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:43:42,784 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:43:47,461 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:43:47,462 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:43:52,843 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:43:52,851 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:43:52,953 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:43:53,209 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:43:53,512 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:45:13,044 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:45:13,044 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:45:18,038 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:45:18,038 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:45:24,001 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:45:24,148 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:45:24,160 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:45:24,334 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:46:02,984 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:46:02,984 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:46:07,749 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:46:07,749 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:46:12,886 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:46:12,894 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:46:13,017 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:46:13,238 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:46:13,431 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:48:18,701 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:48:18,701 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:48:23,692 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:48:23,693 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:48:29,560 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:48:29,568 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:48:29,851 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:48:29,907 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:48:30,349 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:49:19,568 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:49:19,568 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:49:24,269 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:49:24,269 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:49:29,496 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:49:29,505 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:49:29,596 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:49:29,857 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:49:30,034 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:50:58,981 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:50:58,982 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:51:03,922 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:51:03,922 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:51:09,712 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:51:09,959 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:52:17,643 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:52:17,644 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:52:22,686 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:52:22,687 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:52:28,911 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:52:29,417 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:53:19,379 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:53:19,380 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:53:23,928 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:53:23,928 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:53:29,255 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:53:29,264 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:53:29,542 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:53:29,647 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:53:30,021 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:55:32,595 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:55:32,596 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:55:37,330 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:55:37,330 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:55:42,795 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:55:42,804 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:55:42,906 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:55:43,174 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:55:43,415 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 13:58:04,846 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:58:04,846 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 13:58:09,713 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 13:58:09,713 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 13:58:15,500 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 13:58:15,509 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 13:58:15,567 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:58:15,864 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 13:58:15,973 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:01:30,863 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:01:30,863 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:01:35,665 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:01:35,666 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:01:41,152 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:01:41,162 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:01:41,226 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:01:41,515 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:01:41,759 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:03:20,140 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:03:20,140 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:03:25,299 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:03:25,299 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:03:32,382 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:03:32,391 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:03:32,407 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:03:32,544 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:03:32,746 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:04:28,550 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-07 14:04:28,552 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-07 14:04:28,774 - jieba - DEBUG - Loading model cost 0.222 seconds.
+2025-01-07 14:04:28,774 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-07 14:06:07,524 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:06:07,524 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:06:12,919 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:06:12,919 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:06:18,693 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:06:18,702 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:06:19,107 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:06:19,107 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:06:19,143 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:08:49,867 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:08:49,867 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:08:54,658 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:08:54,659 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:09:00,274 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:09:00,282 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:09:00,358 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:09:00,635 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:09:00,781 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:09:32,011 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-07 14:09:32,011 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-07 14:09:32,285 - jieba - DEBUG - Loading model cost 0.274 seconds.
+2025-01-07 14:09:32,286 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-07 14:18:01,561 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:18:01,562 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:18:06,304 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:18:06,304 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:18:11,872 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:18:11,880 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:18:12,039 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:18:12,234 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:18:12,524 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:20:20,755 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-07 14:20:20,758 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-07 14:20:21,026 - jieba - DEBUG - Loading model cost 0.268 seconds.
+2025-01-07 14:20:21,026 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-07 14:21:49,668 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:21:49,668 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:21:54,283 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:21:54,284 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:21:59,435 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:21:59,443 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:21:59,932 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:21:59,943 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:21:59,961 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:22:20,684 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-07 14:22:20,686 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-07 14:22:20,961 - jieba - DEBUG - Loading model cost 0.276 seconds.
+2025-01-07 14:22:20,962 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-07 14:23:51,169 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:23:51,170 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:23:55,722 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:23:55,722 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:24:01,006 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:24:01,015 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:24:01,108 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:24:01,373 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:24:01,523 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:24:54,172 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-07 14:24:54,173 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-07 14:24:54,444 - jieba - DEBUG - Loading model cost 0.271 seconds.
+2025-01-07 14:24:54,444 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-07 14:27:15,012 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:27:15,013 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:27:19,927 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:27:19,927 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:27:25,763 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:27:25,772 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:27:25,999 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:27:26,151 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:27:26,362 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:34:13,850 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-07 14:34:13,852 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-07 14:34:14,131 - jieba - DEBUG - Loading model cost 0.279 seconds.
+2025-01-07 14:34:14,131 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-07 14:35:47,445 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:35:47,445 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:35:52,506 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:35:52,507 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:35:58,110 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:35:58,118 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:35:58,332 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:35:58,473 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:35:58,656 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:36:13,722 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-07 14:36:13,723 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-07 14:36:13,996 - jieba - DEBUG - Loading model cost 0.273 seconds.
+2025-01-07 14:36:13,996 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-07 14:41:17,534 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:41:17,534 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:41:22,390 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:41:22,390 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:41:30,281 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:41:30,295 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:41:30,609 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:41:30,983 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:41:31,098 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:45:41,530 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:45:41,531 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:45:47,584 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:45:47,587 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:45:55,464 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:45:55,484 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:45:55,545 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:45:55,560 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:48:07,825 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:48:07,826 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:48:13,026 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:48:13,026 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:48:25,791 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:48:26,680 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:48:28,230 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:48:28,257 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:49:07,958 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-07 14:49:07,959 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-07 14:49:08,948 - jieba - DEBUG - Loading model cost 0.989 seconds.
+2025-01-07 14:49:08,948 - jieba - DEBUG - Prefix dict has been built successfully.
+2025-01-07 14:51:13,753 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:51:13,754 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-01-07 14:51:18,801 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: mps
+2025-01-07 14:51:18,801 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: paraphrase-multilingual-MiniLM-L12-v2
+2025-01-07 14:51:27,881 - httpx - INFO - HTTP Request: GET https://checkip.amazonaws.com/ "HTTP/1.1 200 "
+2025-01-07 14:51:28,741 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-01-07 14:51:28,867 - httpx - INFO - HTTP Request: GET http://localhost:7860/startup-events "HTTP/1.1 200 OK"
+2025-01-07 14:51:28,884 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-01-07 14:52:11,646 - jieba - DEBUG - Building prefix dict from the default dictionary ...
+2025-01-07 14:52:11,647 - jieba - DEBUG - Loading model from cache /var/folders/k9/_mf5q9r144z9zvj_8n69lrh40000gn/T/jieba.cache
+2025-01-07 14:52:12,246 - jieba - DEBUG - Loading model cost 0.599 seconds.
+2025-01-07 14:52:12,246 - jieba - DEBUG - Prefix dict has been built successfully.

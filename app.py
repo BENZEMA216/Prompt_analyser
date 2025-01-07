@@ -6,6 +6,7 @@ import os
 import traceback
 import logging
 import jieba
+import time
 
 # 配置日志
 logging.basicConfig(
@@ -258,242 +259,68 @@ class PromptAnalysisApp:
     
     def get_style_html(self):
         """返回样式HTML"""
-        return """
-        <style>
-        /* 卡片基础样式 */
-        .prompt-card {
-            background: var(--background-fill-primary);
-            border: 1px solid var(--border-color-primary);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 16px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        /* 文本和背景样式 */
-        .prompt-text {
-            color: var(--body-text-color);
-            font-size: 15px;
-            line-height: 1.6;
-            margin: 12px 0;
-            padding: 12px;
-            background: var(--background-fill-secondary);
-            border-radius: 8px;
-            border: 1px solid var(--border-color-primary);
-        }
-        
-        /* 差异分析样式 */
-        .diff-section {
-            background: var(--background-fill-secondary);
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            border-left: 3px solid var(--primary-500);
-        }
-        
-        .version-text {
-            margin: 5px 0;
-            color: var(--body-text-color);
-            line-height: 1.6;
-        }
-        
-        /* 差异文本颜色 */
-        .word-removed {
-            color: #ff7875;  /* 更亮的红色 */
-            background-color: rgba(255, 77, 79, 0.15);
-            padding: 0 4px;
-            border-radius: 3px;
-            font-weight: 500;
-        }
-        
-        .word-added {
-            color: #73d13d;  /* 更亮的绿色 */
-            background-color: rgba(82, 196, 26, 0.15);
-            padding: 0 4px;
-            border-radius: 3px;
-            font-weight: 500;
-        }
-        
-        /* 变更摘要样式 */
-        .change-summary {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid var(--border-color-primary);
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        
-        .change-summary .word-removed {
-            margin-right: 6px;
-        }
-        
-        .change-summary .word-added {
-            margin-left: 6px;
-        }
-        
-        /* 标签样式 */
-        .section-label {
-            color: var(--body-text-color);
-            font-size: 14px;
-            font-weight: 500;
-            margin: 15px 0 10px;
-            opacity: 0.9;
-        }
-        
-        /* 暗色模式特定样式 */
-        @media (prefers-color-scheme: dark) {
-            .prompt-card {
-                background: var(--background-fill-primary);
-                border-color: rgba(255, 255, 255, 0.1);
-            }
-            
-            .prompt-text {
-                background: rgba(255, 255, 255, 0.05);
-                border-color: rgba(255, 255, 255, 0.1);
-            }
-            
-            .diff-section {
-                background: rgba(255, 255, 255, 0.05);
-                border-left-color: var(--primary-400);
-            }
-            
-            .word-removed {
-                color: #ff9c9c;  /* 暗色模式下更亮的红色 */
-                background-color: rgba(255, 77, 79, 0.2);
-            }
-            
-            .word-added {
-                color: #95eb6a;  /* 暗色模式下更亮的绿色 */
-                background-color: rgba(82, 196, 26, 0.2);
-            }
-            
-            .section-label {
-                color: rgba(255, 255, 255, 0.9);
-            }
-            
-            .image-error {
-                color: rgba(255, 255, 255, 0.7);
-                background: rgba(255, 255, 255, 0.1);
-            }
-            
-            .saved-badge {
-                background-color: var(--primary-400);
-            }
-        }
-        
-        /* 图片网格样式 */
-        .image-grid {
-            display: flex;
-            gap: 16px;
-            margin-top: 16px;
-            flex-wrap: wrap;
-        }
-        
-        .image-row {
-            display: flex;
-            gap: 16px;
-            width: 100%;
-        }
-        
-        .grid-image {
-            position: relative;
-            width: calc((100% - 48px) / 4);  /* 4列等宽，减去3个间隔的16px */
-            aspect-ratio: 1;
-            border-radius: 8px;
-            overflow: hidden;
-            background: var(--background-fill-secondary);
-            border: 1px solid var(--border-color-primary);
-        }
-        
-        .grid-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .saved-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background-color: var(--primary-500);
-            color: white;
-            padding: 4px 8px;
+        # 使用每小时更新一次的版本号,而不是每秒
+        version = int(time.time() / 3600)
+        return f"""
+        <style data-version="{version}">
+        /* 确保样式作用域限定在gradio应用内 */
+        .gradio-app-{version} {{
+            /* 深色模式基础变量 */
+            --background-base: #000000;          /* 最深的背景色（整体背景） */
+            --background-primary: #1a1a1a;       /* 主要背景色（卡片背景） */
+            --background-secondary: #2d2d2d;     /* 次要背景色（输入框、表格等） */
+            --background-hover: #383838;         /* 悬停状态背景色 */
+            --background-hover-light: #454545;   /* 滚动条悬停背景色 */
+            --text-primary: #ffffff;             /* 主要文本颜色 */
+            --text-secondary: #e0e0e0;          /* 次要文本颜色 */
+            --text-disabled: #808080;           /* 禁用状态文本颜色 */
+            --border-color: #404040;            /* 边框颜色 */
+            --accent-color: #2c8fff;            /* 强调色（按钮、链接等） */
+            --accent-hover: #1a7fff;            /* 强调色悬停状态 */
+            --error-color: #ff4d4f;             /* 错误状态颜色 */
+            --success-color: #52c41a;           /* 成功状态颜色 */
+        }}
+
+        /* 所有样式规则需要添加.gradio-app-{version}作为父选择器 */
+        .gradio-app-{version} .gradio-container,
+        .gradio-app-{version} .gradio-box,
+        .gradio-app-{version} .contain {{
+            background-color: var(--background-base) !important;
+            color: var(--text-primary) !important;
+        }}
+
+        /* 其他样式规则同样添加作用域... */
+        .gradio-app-{version} .gr-box,
+        .gradio-app-{version} .gr-panel,
+        .gradio-app-{version} .gr-block,
+        .gradio-app-{version} .gr-form,
+        .gradio-app-{version} .input-box,
+        .gradio-app-{version} .output-box {{
+            background-color: var(--background-primary) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }}
+
+        /* 修复滚动条样式 */
+        .gradio-app-{version} ::-webkit-scrollbar {{
+            width: 8px;
+            height: 8px;
+        }}
+
+        .gradio-app-{version} ::-webkit-scrollbar-track {{
+            background: var(--background-secondary);
+        }}
+
+        .gradio-app-{version} ::-webkit-scrollbar-thumb {{
+            background: var(--border-color);
             border-radius: 4px;
-            font-size: 12px;
-            z-index: 1;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .image-error {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--body-text-color-subdued);
-            font-size: 13px;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        /* 布局样式 */
-        .prompt-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            align-items: flex-start;
-        }
-        
-        .prompt-col {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        /* 垫图样式调整 */
-        .reference-section {
-            width: 120px;
-            flex-shrink: 0;
-            background: var(--background-fill-secondary);
-            border-radius: 8px;
-            padding: 10px;
-            border: 1px solid var(--border-color-primary);
-        }
-        
-        .reference-image {
-            width: 100px;
-            height: 100px;
-            overflow: hidden;
-            border-radius: 4px;
-            background: var(--background-fill-primary);
-            margin: 0 auto;
-        }
-        
-        .reference-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        /* 头部样式 */
-        .header-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        
-        .timestamp {
-            color: var(--body-text-color-subdued);
-            font-size: 13px;
-        }
-        
-        .enter-from {
-            color: var(--body-text-color-subdued);
-            font-size: 13px;
-            padding: 2px 8px;
-            background: var(--background-fill-secondary);
-            border-radius: 4px;
-            border: 1px solid var(--border-color-primary);
-        }
+        }}
+
+        .gradio-app-{version} ::-webkit-scrollbar-thumb:hover {{
+            background: var(--background-hover-light);  /* 使用新的hover变量 */
+        }}
+
+        /* 其他样式保持不变,但都需要添加.gradio-app-{version}作用域... */
         </style>
         """
     
@@ -505,13 +332,13 @@ class PromptAnalysisApp:
             print(f"生成来源: {prompt.get('enter_from')}")
             
             # 获取生成来源信息
-            enter_from = f'<span class="enter-from">{prompt.get("enter_from", "")}</span>' if prompt.get("enter_from") else ''
+            enter_from = f'<span class="enter-from" style="color: var(--text-primary);">{prompt.get("enter_from", "")}</span>' if prompt.get("enter_from") else ''
             
             html = f"""
-            <div class="prompt-card">
+            <div class="prompt-card" style="background-color: var(--background-primary); color: var(--text-primary);">
                 <div class="prompt-content">
                     <div class="header-row">
-                        <div class="timestamp">{prompt['timestamp']}</div>
+                        <div class="timestamp" style="color: var(--text-secondary);">{prompt['timestamp']}</div>
                         {enter_from}
                     </div>
                     
@@ -519,7 +346,7 @@ class PromptAnalysisApp:
                         <!-- 左侧 Prompt 部分 -->
                         <div class="prompt-col">
                             {self.generate_diff_section(prev_prompt, prompt) if prev_prompt else ''}
-                            <div class="prompt-text">{prompt["prompt"]}</div>
+                            <div class="prompt-text" style="color: var(--text-primary);">{prompt["prompt"]}</div>
                         </div>
                         
                         <!-- 右侧垫图部分 -->
@@ -527,7 +354,7 @@ class PromptAnalysisApp:
                     </div>
                     
                     <!-- 生成结果展示 -->
-                    <div class="section-label">生成结果：</div>
+                    <div class="section-label" style="color: var(--text-primary);">生成结果：</div>
                     {self.generate_image_grid(prompt)}
                 </div>
             </div>
@@ -544,7 +371,7 @@ class PromptAnalysisApp:
             return ''
         
         return f"""
-        <div class="diff-section">
+        <div class="diff-section" style="background-color: var(--background-secondary); color: var(--text-primary);">
             <div class="version-text">原始版本: {diff["prev_html"]}</div>
             <div class="version-text current">当前版本: {diff["curr_html"]}</div>
             <div class="change-summary">
@@ -561,7 +388,7 @@ class PromptAnalysisApp:
             return ''
         
         return f"""
-        <div class="reference-section">
+        <div class="reference-section" style="background-color: var(--background-secondary); color: var(--text-primary);">
             <div class="section-label">
                 <span class="label-icon">📎</span> 参考图
             </div>
@@ -574,30 +401,47 @@ class PromptAnalysisApp:
 
     def generate_image_grid(self, prompt):
         """生成图片网格的HTML，确保1*4排列"""
-        preview_urls = prompt['preview_url'] if isinstance(prompt['preview_url'], list) else [prompt['preview_url']]
-        saved_images = prompt.get('saved_images', [])
+        # 处理预览图URL
+        preview_urls = prompt['preview_url']
+        if isinstance(preview_urls, str):
+            # 如果是单个URL，尝试解析是否包含多个URL
+            if ',' in preview_urls:
+                preview_urls = [url.strip() for url in preview_urls.split(',')]
+            else:
+                preview_urls = [preview_urls]
+        
+        # 处理保存状态
+        saved_images = prompt.get('saved_images', [False] * len(preview_urls))
         if not isinstance(saved_images, list):
-            saved_images = [saved_images] * len(preview_urls)
+            if ',' in str(saved_images):
+                saved_images = [s.strip().lower() == 'true' for s in str(saved_images).split(',')]
+            else:
+                saved_images = [saved_images] * len(preview_urls)
+        
+        # 确保只处理4张图片
+        preview_urls = preview_urls[:4]
+        saved_images = saved_images[:4]
         
         grid_html = '<div class="image-grid">'
         
-        # 每4张图片一行
-        for i in range(0, len(preview_urls), 4):
-            grid_html += '<div class="image-row">'
-            row_urls = preview_urls[i:i+4]
-            row_saved = saved_images[i:i+4]
-            
-            for url, is_saved in zip(row_urls, row_saved):
-                if pd.notna(url) and url.strip():
-                    grid_html += f"""
-                    <div class="grid-image">
-                        {f'<div class="saved-badge">已保存</div>' if is_saved else ''}
-                        <img src="{url}" alt="预览图" 
-                             onerror="this.parentElement.innerHTML='<div class=\'image-error\'>图片加载失败</div>';">
-                    </div>
-                    """
-            
-            grid_html += '</div>'
+        # 生成图片容器
+        for url, is_saved in zip(preview_urls, saved_images):
+            if pd.notna(url) and url.strip():
+                grid_html += f"""
+                <div class="image-container">
+                    <img src="{url.strip()}" alt="预览图" 
+                         onerror="this.parentElement.innerHTML='<div class=\'image-error\'>图片加载失败</div>';">
+                    {f'<div class="saved-badge">已保存</div>' if is_saved else ''}
+                </div>
+                """
+        
+        # 如果图片不足4张，添加空白占位
+        for _ in range(4 - len(preview_urls)):
+            grid_html += """
+            <div class="image-container">
+                <div class="image-error">暂无图片</div>
+            </div>
+            """
         
         grid_html += '</div>'
         return grid_html
@@ -619,303 +463,533 @@ class PromptAnalysisApp:
             print(f"生成聚类部分时出错: {str(e)}")
             return ""
 
-    def generate_cluster_view(self, cluster_id):
-        """生成单个聚类的视图"""
+    def get_enter_from_text(self, enter_from):
+        """转换来源代码为可读文本"""
+        if not enter_from:  # 如果字段为空或不存在，显示 "-"
+            return "-"
+        
+        source_map = {
+            'default': '直接输入',
+            'new_user_instruction': '新手引导',
+            'modal_click': '模态切换',
+            'remix': '做同款',
+            'assets': '资产页',
+            'generate_result': '重新编辑'
+        }
+        return source_map.get(enter_from, enter_from)
+
+    def generate_cluster_view(self, prompts):
+        """生成聚类详情视图"""
         try:
-            # 确保cluster_id是整数
-            cluster_id = int(cluster_id) if not isinstance(cluster_id, int) else cluster_id
-            
-            if not self.current_results or cluster_id not in self.current_results['clusters']:
-                print(f"未找到聚类 {cluster_id}")
-                print(f"可用的聚类: {list(self.current_results['clusters'].keys()) if self.current_results else 'None'}")
-                return "未找到聚类数据"
-            
-            prompts = self.current_results['clusters'][cluster_id]
             html = self.get_style_html()
+            html += """
+            <style>
+            .cluster-container {
+                background: #1a1b1e;
+                border-radius: 16px;
+                padding: 20px;
+                margin: 20px 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            }
             
-            html += f"""
-            <div class="section-title">
-                聚类 {cluster_id} ({len(prompts)} 条Prompt)
-            </div>
+            .prompt-card {
+                display: flex;
+                gap: 20px;
+                padding: 20px;
+                margin: 15px 0;
+                background: #2c2d30;
+                border-radius: 12px;
+                border: 1px solid #3a3b3e;
+            }
+            
+            .prompt-main {
+                flex: 3;
+            }
+            
+            .prompt-side {
+                flex: 1;
+                min-width: 200px;
+            }
+            
+            .image-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+                margin: 15px 0;
+            }
+            
+            .image-container {
+                position: relative;
+                aspect-ratio: 1;
+                border-radius: 8px;
+                overflow: hidden;
+                background: #1a1b1e;
+            }
+            
+            .image-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+            
+            .image-container:hover img {
+                transform: scale(1.05);
+            }
+            
+            .saved-badge {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: rgba(82, 196, 26, 0.9);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                z-index: 1;
+            }
+            
+            .prompt-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #3a3b3e;
+                color: #e0e0e0;
+            }
+            
+            .timestamp-group {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .timestamp {
+                color: #e0e0e0;
+            }
+            
+            .source-tag {
+                background: #2a2b2e;
+                color: #a0a0a0;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 13px;
+                border: 1px solid #3a3b3e;
+            }
+            
+            .image-count {
+                background: rgba(82, 196, 26, 0.1);
+                color: #52c41a;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 13px;
+            }
+            
+            .diff-section {
+                background: #1a1b1e;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 10px 0;
+            }
+            
+            .diff-header {
+                color: #a0a0a0;
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+            
+            .diff-content {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .diff-text {
+                line-height: 1.6;
+                padding: 10px;
+                background: #2c2d30;
+                border-radius: 6px;
+            }
+            
+            .word-removed {
+                color: #ff4d4f;
+                background-color: rgba(255, 77, 79, 0.1);
+                padding: 2px 6px;
+                border-radius: 4px;
+                display: inline-block;
+                margin: 0 2px;
+            }
+            
+            .word-added {
+                color: #52c41a;
+                background-color: rgba(82, 196, 26, 0.1);
+                padding: 2px 6px;
+                border-radius: 4px;
+                display: inline-block;
+                margin: 0 2px;
+            }
+            
+            .diff-summary {
+                margin-top: 10px;
+                padding-top: 10px;
+                border-top: 1px solid #3a3b3e;
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            
+            .prompt-text {
+                font-size: 15px;
+                line-height: 1.6;
+                padding: 15px;
+                background: #1a1b1e;
+                border-radius: 8px;
+                color: #e0e0e0;
+                margin: 10px 0;
+            }
+            </style>
             """
             
-            # 按时间排序显示
-            sorted_prompts = sorted(prompts, key=lambda x: x['timestamp'])
-            for i, prompt in enumerate(sorted_prompts):
-                html += self.generate_prompt_card(
-                    prompt,
-                    prev_prompt=sorted_prompts[i-1] if i > 0 else None
-                )
+            # 按时间和Prompt分组
+            groups = {}
+            for prompt in prompts:
+                key = (prompt['timestamp'], prompt['prompt'])
+                if key not in groups:
+                    groups[key] = {
+                        'timestamp': prompt['timestamp'],
+                        'prompt': prompt['prompt'],
+                        'images': [],
+                        'reference_img': prompt.get('reference_img', ''),
+                        'enter_from': prompt.get('enter_from', None)  # 使用 get 方法，设置默认值为 None
+                    }
+                
+                # 添加图片和保存状态
+                url = prompt['preview_url']
+                saved = prompt.get('saved_images', False)
+                if url and pd.notna(url):
+                    groups[key]['images'].append({
+                        'url': url.strip(),
+                        'saved': saved
+                    })
             
+            # 转换为列表并排序
+            sorted_groups = sorted(groups.values(), key=lambda x: int(x['timestamp']))
+            
+            html += '<div class="cluster-details">'
+            
+            for i, group in enumerate(sorted_groups):
+                timestamp = datetime.fromtimestamp(int(group['timestamp'])).strftime('%Y-%m-%d %H:%M:%S')
+                source_text = self.get_enter_from_text(group.get('enter_from'))  # 使用 get 方法获取来源
+                
+                # 生成差异分析
+                diff_html = ''
+                if i > 0:
+                    prev_group = sorted_groups[i-1]
+                    diff = analyze_word_differences(prev_group['prompt'], group['prompt'])
+                    if diff['prev_unique'] or diff['curr_unique']:
+                        removed_words = diff['prev_unique']
+                        added_words = diff['curr_unique']
+                        
+                        if removed_words or added_words:
+                            diff_html = f"""
+                            <div class="diff-section">
+                                <div class="diff-header">与上一条Prompt的差异：</div>
+                                <div class="diff-content">
+                                    <div class="diff-text">{diff['curr_html']}</div>
+                                    <div class="diff-summary">
+                                        {f'<div class="word-removed">删除: {", ".join(removed_words)}</div>' if removed_words else ''}
+                                        {f'<div class="word-added">新增: {", ".join(added_words)}</div>' if added_words else ''}
+                                    </div>
+                                </div>
+                            </div>
+                            """
+                
+                # 生成图片网格
+                grid_html = '<div class="image-grid">'
+                for img in group['images'][:4]:  # 限制最多4张图
+                    grid_html += f"""
+                    <div class="image-container">
+                        <img src="{img['url']}" alt="预览图" 
+                             onerror="this.parentElement.innerHTML='<div class=\'image-error\'>加载失败</div>';">
+                        {f'<div class="saved-badge">已保存</div>' if img['saved'] else ''}
+                    </div>
+                    """
+                grid_html += '</div>'
+                
+                html += f"""
+                <div class="cluster-container">
+                    <div class="prompt-header">
+                        <div class="timestamp-group">
+                            <div class="timestamp">{timestamp}</div>
+                            <div class="source-tag">来源：{source_text}</div>
+                        </div>
+                        <div class="image-count">生成数量：{len(group['images'])}</div>
+                    </div>
+                    <div class="prompt-card">
+                        <div class="prompt-main">
+                            {diff_html}
+                            <div class="prompt-text">{group['prompt']}</div>
+                            <div class="preview-section">
+                                {grid_html}
+                            </div>
+                        </div>
+                        <div class="prompt-side">
+                            {f'''
+                            <div class="reference-image">
+                                <div class="image-label">垫图</div>
+                                <img src="{group['reference_img']}" alt="垫图"
+                                     onerror="this.parentElement.style.display='none';">
+                            </div>
+                            ''' if group.get('reference_img') else ''}
+                        </div>
+                    </div>
+                </div>
+                """
+            
+            html += "</div>"
             return html
+            
         except Exception as e:
-            print(f"生成聚类视图时出错: {str(e)}")
+            print(f"生成聚类视图失败: {str(e)}")
             traceback.print_exc()
             return f"生成视图失败: {str(e)}"
 
 def create_ui():
     app = PromptAnalysisApp()
+    version = int(time.time() / 3600)
     
-    def analyze_and_show_clusters(user_id):
-        try:
-            print("\n=== 开始分析聚类 ===")
-            print(f"用户ID: {user_id}")
-            
-            results = app.analyze_user(user_id)
-            
-            if isinstance(results, str):
-                print(f"返回错误信息: {results}")
-                return [[], gr.update(choices=["全部"]), results, "分析失败"]
-            
-            # 准备数据
-            clusters_data = []
-            cluster_choices = ["全部"]
-            
-            # 按聚类大小排序并限制数量
-            sorted_clusters = sorted(
-                app.current_results['clusters'].items(),
-                key=lambda x: len(x[1]),
-                reverse=True
-            )[:50]  # 限制最多显示50个聚类
-            
-            print(f"\n找到 {len(sorted_clusters)} 个聚类 (限制显示前50个)")
-            
-            # 处理每个聚类
-            for cluster_id, prompts in sorted_clusters:
-                # 确保cluster_id是字符串类型
-                cluster_id = str(cluster_id)
-                
-                latest_prompt = sorted(prompts, key=lambda x: x['timestamp'])[-1]
-                prompt_preview = latest_prompt['prompt'][:100] + "..." if len(latest_prompt['prompt']) > 100 else latest_prompt['prompt']
-                
-                # 使用一致的格式
-                cluster_label = f"聚类 {cluster_id}"
-                
-                clusters_data.append([
-                    cluster_label,
-                    f"{len(prompts)}条",
-                    prompt_preview
-                ])
-                cluster_choices.append(cluster_label)
-                
-                print(f"添加选项: {cluster_label}")
-            
-            print("\n=== 最终数据 ===")
-            print(f"表格数据: {len(clusters_data)} 行")
-            print(f"选项列表: {cluster_choices}")
-            
-            return [
-                clusters_data,  # 表格数据
-                gr.update(choices=cluster_choices, value="全部"),  # 下拉选项
-                "",  # 清空输出
-                f"找到 {len(app.current_results['clusters'])} 个聚类，显示前 {len(sorted_clusters)} 个"  # 调试信息
-            ]
-        except Exception as e:
-            print(f"\n=== 发生错误 ===")
-            print(f"错误信息: {str(e)}")
-            traceback.print_exc()
-            return [[], gr.update(choices=["全部"]), str(e), str(e)]
-    
-    def show_cluster_details(selected_cluster):
-        print(f"选择的聚类: {selected_cluster}")
+    with gr.Blocks(
+        theme=gr.themes.Base(),
+        css=f".gradio-app {{ --app-version: {version}; }}"
+    ) as interface:
+        # 添加类名到根元素
+        gr.HTML(f'<div class="gradio-app-{version}">')
+        gr.HTML(app.get_style_html())
         
-        if not app.current_results:
-            return ["请先进行分析", "未选择聚类"]
+        gr.Markdown("# Prompt 分析工具")
         
-        try:
-            if selected_cluster == "全部":
-                return [app.generate_analysis_view(app.current_results), "显示所有聚类"]
-            
+        # 1. 上传和用户选择区域
+        with gr.Row():
+            file_input = gr.File(
+                label="上传CSV文件",
+                file_types=[".csv"]
+            )
+            user_dropdown = gr.Dropdown(  # 改用 Dropdown
+                label="选择用户",
+                interactive=True,
+                choices=[]
+            )
+            analyze_btn = gr.Button("开始分析")
+        
+        # 2. 状态提示
+        status_text = gr.Textbox(
+            label="状态",
+            interactive=False
+        )
+        
+        # 3. 垂类表格（初始隐藏）
+        category_table = gr.Dataframe(
+            headers=["垂类ID", "垂类名称", "数据量"],
+            label="垂类列表（点击行查看详情）",
+            interactive=True,
+            visible=False
+        )
+        
+        # 4. 结果展示
+        analysis_result = gr.HTML(label="分析结果")
+
+        # 事件处理函数定义
+        def handle_file_upload(file):
             try:
-                # 从 "聚类 X" 格式中提取数字
-                cluster_id = int(selected_cluster.split()[1])  # 转换为整数
-                print(f"提取的聚类ID: {cluster_id}")
-                print(f"可用的聚类: {list(app.current_results['clusters'].keys())}")
+                if file is None:
+                    return gr.update(choices=[], value=None), "请先上传CSV文件"
+                    
+                app.df = pd.read_csv(file.name)
+                app.df['用户UID'] = app.df['用户UID'].astype(str)
+                unique_users = app.df['用户UID'].unique().tolist()
                 
-                # 直接检查整数ID是否存在
-                if cluster_id not in app.current_results['clusters']:
-                    print(f"未找到聚类 {cluster_id}")
-                    return [f"未找到聚类 {cluster_id}", "无效的聚类ID"]
-                
-                # 生成视图
-                result = app.generate_cluster_view(cluster_id)
-                print(f"生成视图成功，长度: {len(result) if result else 0}")
-                return [result, f"显示聚类 {cluster_id} 的详细信息"]
-                
-            except ValueError as e:
-                print(f"聚类ID转换错误: {str(e)}")
-                return ["无效的聚类ID格式", "格式错误"]
+                print(f"成功加载CSV文件，共有 {len(unique_users)} 个用户")
+                return (
+                    gr.update(
+                        choices=unique_users,
+                        value=unique_users[0] if unique_users else None
+                    ),
+                    "文件加载成功，请选择用户并点击分析"
+                )
             except Exception as e:
-                print(f"处理聚类ID时出错: {str(e)}")
+                print(f"文件加载错误: {str(e)}")
+                return gr.update(choices=[], value=None), f"文件加载失败: {str(e)}"
+
+        def handle_analyze_click(user_id):
+            try:
+                if app.df is None:
+                    return (
+                        gr.update(value=None, visible=False),
+                        "请先上传CSV文件"
+                    )
+                
+                if not user_id:
+                    return (
+                        gr.update(value=None, visible=False),
+                        "请选择用户"
+                    )
+                
+                user_data = app.df[app.df['用户UID'].astype(str) == str(user_id)]
+                if len(user_data) == 0:
+                    return (
+                        gr.update(value=None, visible=False),
+                        f"未找到用户 {user_id} 的数据"
+                    )
+                
+                # 打印调试信息
+                print("DataFrame 列名:", user_data.columns.tolist())
+                
+                # 准备基础数据
+                analysis_data = {
+                    'prompt': user_data['prompt'],
+                    'timestamp': user_data['生成时间(精确到秒)'],
+                    'preview_url': user_data['生成结果预览图'],
+                }
+                
+                # 可选字段处理
+                if '是否双端采纳(下载、复制、发布、后编辑、生视频、作为参考图、去画布)' in user_data.columns:
+                    analysis_data['saved_images'] = user_data['是否双端采纳(下载、复制、发布、后编辑、生视频、作为参考图、去画布)']
+                
+                # 来源字段处理 - 只在字段存在时添加
+                if '生成来源（埋点enter_from）' in user_data.columns:
+                    analysis_data['enter_from'] = user_data['生成来源（埋点enter_from）']
+                    
+                if '指令编辑垫图' in user_data.columns:
+                    analysis_data['reference_img'] = user_data['指令编辑垫图']
+                
+                # 转换为DataFrame
+                analysis_data = pd.DataFrame(analysis_data)
+                
+                # 分析数据并保存结果
+                app.current_results = app.analyzer.analyze_user_prompts(analysis_data, str(user_id))
+                if not app.current_results or 'clusters' not in app.current_results:
+                    return (
+                        gr.update(value=None, visible=False),
+                        "分析结果为空"
+                    )
+                
+                # 将聚类结果转换为表格格式
+                category_rows = []
+                for cluster_id, prompts in app.current_results['clusters'].items():
+                    category_rows.append([
+                        cluster_id,  # 直接使用数字作为聚类ID
+                        f"聚类{cluster_id}",  # 聚类名称
+                        len(prompts)  # 该聚类中的数据量
+                    ])
+                
+                # 按数据量排序（可选）
+                category_rows.sort(key=lambda x: x[2], reverse=True)
+                
+                if not category_rows:
+                    return (
+                        gr.update(value=None, visible=False),
+                        f"用户 {user_id} 暂无数据"
+                    )
+                    
+                return (
+                    gr.update(value=category_rows, visible=True),
+                    f"找到用户 {user_id} 的数据，请点击聚类查看详情"
+                )
+            except Exception as e:
+                print(f"分析错误: {str(e)}")
                 traceback.print_exc()
-                return ["处理聚类ID时出错", str(e)]
-            
-        except Exception as e:
-            print(f"显示聚类详情时出错: {str(e)}")
-            traceback.print_exc()
-            return [str(e), "出错"]
-    
-    # 创建界面
-    with gr.Blocks(title="Prompt分析工具", css="""
-        :root {
-            --primary-color: #8B9DA5;  /* 莫兰迪蓝灰色 */
-            --background-color: #F5F4F2;  /* 莫兰迪米白色 */
-            --text-color: #4A4A4A;  /* 深灰色文字 */
-            --border-color: #D6D3CC;  /* 莫兰迪灰棕色边框 */
-            --hover-color: #A4B0B9;  /* 浅蓝灰色悬停 */
-            --accent-color: #B5A9A1;  /* 莫兰迪褐色强调 */
-            --success-color: #9CAF88;  /* 莫兰迪绿色成功提示 */
-        }
-        
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            background-color: var(--background-color); 
-            color: var(--text-color);
-        }
-        .overview-section, .selector-section, .output-section, .debug-section {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin-bottom: 20px;
-            padding: 15px;
-            border-radius: 8px;
-        }
-        .fixed-table, .fixed-selector {
-            width: 100%; 
-            margin-bottom: 20px; 
-            background-color: #FFFFFF;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .prompt-card {
-            background-color: #FFFFFF;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .prompt-card .saved-badge {
-            background-color: var(--success-color);
-            color: #FFFFFF;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-        button, .gr-button {
-            background-color: var(--primary-color);
-            color: #FFFFFF;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-        button:hover, .gr-button:hover {
-            background-color: var(--hover-color);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .gr-dropdown {
-            background-color: #FFFFFF;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            transition: all 0.3s ease;
-        }
-        .gr-dropdown:hover {
-            border-color: var(--accent-color);
-        }
-        .section-title {
-            color: var(--accent-color);
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-        .cluster-header {
-            color: var(--primary-color);
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 15px;
-        }
-    """) as interface:
-        with gr.Column(elem_classes="container"):
-            gr.Markdown("# Prompt 分析工具")
-            
-            # 1. 上传和选择区域
-            with gr.Row():
-                file_input = gr.File(label="上传CSV文件", file_types=[".csv"])
-                user_dropdown = gr.Dropdown(label="选择用户", interactive=True)
-                analyze_btn = gr.Button("开始分析", variant="primary")
-            
-            # 2. 聚类概览区域
-            with gr.Row(elem_classes="overview-section"):
-                cluster_overview = gr.Dataframe(
-                    headers=["聚类ID", "Prompt数量", "示例Prompt"],
-                    label="聚类概览",
-                    wrap=True,
-                    elem_classes=["fixed-table"]  # 添加固定样式类
+                return (
+                    gr.update(value=None, visible=False),
+                    f"分析失败: {str(e)}"
                 )
-            
-            # 3. 聚类选择区域
-            with gr.Row(elem_classes="selector-section"):
-                cluster_selector = gr.Dropdown(
-                    label="选择聚类查看详情",
-                    choices=["全部"],
-                    value="全部",
-                    interactive=True,
-                    elem_classes=["fixed-selector"]  # 添加固定样式类
-                )
-            
-            # 4. 结果展示区域
-            with gr.Row(elem_classes="output-section"):
-                output = gr.HTML(elem_classes=["fixed-output"])  # 添加固定样式类
-            
-            # 5. 调试信息区域
-            with gr.Row(elem_classes="debug-section"):
-                debug_output = gr.Textbox(label="调试信息", lines=3)
+
+        def handle_category_select(evt: gr.SelectData, user_id):
+            try:
+                if app.df is None:
+                    return "请先上传CSV文件"
+                
+                if not user_id:
+                    return "请选择用户"
+                
+                # 获取选中行的聚类ID
+                try:
+                    # 如果 evt.value 是列表
+                    if isinstance(evt.value, (list, tuple)):
+                        cluster_id = int(evt.value[0])
+                    # 如果 evt.value 已经是整数
+                    elif isinstance(evt.value, (int, float)):
+                        cluster_id = int(evt.value)
+                    # 如果 evt.value 是字符串
+                    elif isinstance(evt.value, str):
+                        # 尝试从字符串中提取数字
+                        import re
+                        match = re.search(r'\d+', evt.value)
+                        if match:
+                            cluster_id = int(match.group())
+                        else:
+                            raise ValueError(f"无法从 {evt.value} 中提取聚类ID")
+                    else:
+                        raise ValueError(f"无法处理的值类型: {type(evt.value)}")
+                except Exception as e:
+                    print(f"提取聚类ID时出错: {str(e)}")
+                    print(f"evt.value: {evt.value}, 类型: {type(evt.value)}")
+                    # 尝试使用 evt.index
+                    cluster_id = evt.index
+                
+                print(f"查看用户 {user_id} 的聚类 {cluster_id} 详情")
+                
+                # 获取当前的聚类结果
+                if not hasattr(app, 'current_results') or not app.current_results:
+                    return "请先进行聚类分析"
+                
+                # 生成选中聚类的视图
+                if cluster_id not in app.current_results['clusters']:
+                    return f"未找到聚类 {cluster_id} 的数据"
+                
+                cluster_prompts = app.current_results['clusters'][cluster_id]
+                return app.generate_cluster_view(cluster_prompts)
+                
+            except Exception as e:
+                print(f"显示聚类详情时出错: {str(e)}")
+                traceback.print_exc()
+                return f"显示详情失败: {str(e)}"
 
         # 绑定事件
         file_input.change(
-            fn=app.load_data,
+            fn=handle_file_upload,
             inputs=[file_input],
-            outputs=[user_dropdown]
-        )
-        
-        analyze_btn.click(
-            fn=analyze_and_show_clusters,
-            inputs=[user_dropdown],
             outputs=[
-                cluster_overview,
-                cluster_selector,
-                output,
-                debug_output
+                user_dropdown,
+                status_text
             ]
         )
         
-        # 修改选择事件，只更新输出和调试信息
-        cluster_selector.change(
-            fn=show_cluster_details,
-            inputs=[cluster_selector],
-            outputs=[output, debug_output]
-        ).then(  # 添加回调以保持选择器状态
-            fn=lambda x: x,
-            inputs=[cluster_selector],
-            outputs=[cluster_selector]
+        analyze_btn.click(
+            fn=handle_analyze_click,
+            inputs=[user_dropdown],
+            outputs=[
+                category_table,
+                status_text
+            ]
         )
-    
+        
+        category_table.select(
+            fn=handle_category_select,
+            inputs=[user_dropdown],
+            outputs=[analysis_result]
+        )
+
+        # 关闭根div
+        gr.HTML('</div>')
+
     return interface
 
 if __name__ == "__main__":
     interface = create_ui()
     interface.launch(
-        share=True,
         server_name="0.0.0.0",
         server_port=7860,
-        debug=True
+        show_error=True,
+        ssl_verify=False,
     ) 

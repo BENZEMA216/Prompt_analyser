@@ -1,118 +1,236 @@
 import gradio as gr
 import pandas as pd
 from app import PromptAnalysisApp
+import traceback
+import time
 
 class GradioInterface:
     def __init__(self):
         self.app = PromptAnalysisApp()
-        
+    
     def create_interface(self):
-        with gr.Blocks() as interface:
-            with gr.Row():
-                file_upload = gr.File(label="上传CSV文件")
-                user_id = gr.Textbox(label="用户ID（可选）")
+        with gr.Blocks(theme=gr.themes.Base()) as interface:
+            gr.HTML(self.get_dark_theme_style())
             
-            # 添加垂类表格
-            category_data = self.get_category_data()
-            category_table = gr.Dataframe(
-                value=category_data,
-                headers=["垂类ID", "垂类名称", "数据量"],
-                row_count=(15, "dynamic"),
-                col_count=(3, "fixed"),
+            gr.Markdown("# Prompt 分析工具")
+            
+            # 1. 上传和用户选择区域
+            with gr.Row():
+                file_input = gr.File(
+                    label="上传CSV文件",
+                    file_types=[".csv"]
+                )
+                user_id = gr.Textbox(
+                    label="用户ID（可选）"
+                )
+                analyze_btn = gr.Button("开始分析")
+            
+            # 添加文件上传状态显示
+            upload_status = gr.Textbox(
+                label="文件上传状态",
                 interactive=False,
-                label="垂类列表（点击行查看详情）"
+                visible=True
             )
             
-            # 添加选中垂类的详情展示
-            selected_category = gr.Textbox(label="选中的垂类", visible=False)
+            # 2. 垂类表格（初始隐藏）
+            category_table = gr.Dataframe(
+                headers=["垂类ID", "垂类名称", "数据量"],
+                label="垂类列表（点击行查看详情）",
+                interactive=True,
+                visible=False
+            )
+            
+            # 3. 结果展示
             analysis_result = gr.HTML(label="分析结果")
             
-            # 处理文件上传
-            file_upload.upload(
-                fn=self.handle_file_upload,
-                inputs=[file_upload],
-                outputs=[category_table]
+            # 事件处理
+            def handle_file_upload(file):
+                try:
+                    self.app.load_data(file)
+                    return "文件加载成功，请输入用户ID并点击分析"
+                except Exception as e:
+                    print(f"文件加载错误: {str(e)}")
+                    return f"文件加载失败: {str(e)}"
+
+            def handle_analyze_click(user_id):
+                try:
+                    if self.app.df is None:
+                        return gr.Dataframe.update(value=None, visible=False), "请先上传CSV文件"
+                    
+                    if not user_id or not user_id.strip():
+                        return gr.Dataframe.update(value=None, visible=False), "请输入用户ID"
+                    
+                    user_id = str(user_id).strip()
+                    print(f"正在分析用户: {user_id}")
+                    
+                    user_data = self.app.df[self.app.df['用户UID'].astype(str) == user_id]
+                    if len(user_data) == 0:
+                        return gr.Dataframe.update(value=None, visible=False), f"未找到用户 {user_id} 的数据"
+                    
+                    print(f"找到用户数据 {len(user_data)} 条")
+                    
+                    # 获取用户的垂类数据
+                    category_data = user_data.groupby('聚类ID').size().reset_index()
+                    category_data.columns = ['聚类ID', '数据量']
+                    
+                    # 转换为列表格式
+                    category_rows = []
+                    for _, row in category_data.iterrows():
+                        category_rows.append([
+                            str(row['聚类ID']),
+                            "垂类" + str(row['聚类ID']),
+                            str(row['数据量'])
+                        ])
+                    
+                    if not category_rows:
+                        return gr.Dataframe.update(value=None, visible=False), f"用户 {user_id} 暂无数据"
+                        
+                    # 只返回两个值：表格更新和状态消息
+                    return gr.Dataframe.update(value=category_rows, visible=True), f"找到用户 {user_id} 的数据"
+                except Exception as e:
+                    print(f"分析错误: {str(e)}")
+                    traceback.print_exc()
+                    return gr.Dataframe.update(value=None, visible=False), f"分析失败: {str(e)}"
+
+            def handle_category_select(evt: gr.SelectData, user_id):
+                try:
+                    if self.app.df is None:
+                        return (
+                            gr.update(value=None),  # 保持表格不变
+                            "请先上传CSV文件"  # 状态消息
+                        )
+                    
+                    if not user_id or not user_id.strip():
+                        return (
+                            gr.update(value=None),
+                            "请先输入用户ID"
+                        )
+                    
+                    user_id = str(user_id).strip()
+                    
+                    # 从选中行获取垂类ID
+                    selected_id = evt.index[0]  # 使用 index 获取选中行的索引
+                    category_id = evt.data[0]  # 获取该行第一列的值（垂类ID）
+                    
+                    print(f"分析用户 {user_id} 的垂类 {category_id}")
+                    
+                    category_df = self.app.df[
+                        (self.app.df['聚类ID'] == int(category_id)) & 
+                        (self.app.df['用户UID'].astype(str) == user_id)
+                    ]
+                    
+                    print(f"找到 {len(category_df)} 条数据")
+                    
+                    if len(category_df) == 0:
+                        return (
+                            gr.update(value=None),
+                            f"用户 {user_id} 在垂类 {category_id} 下暂无数据"
+                        )
+                    
+                    results = self.app.analyze_user_prompts(category_df)
+                    if not results:
+                        return (
+                            gr.update(value=None),
+                            "分析结果为空"
+                        )
+                        
+                    analysis_view = self.app.generate_analysis_view(results)
+                    return (
+                        gr.update(value=None),  # 保持表格不变
+                        analysis_view  # 显示分析结果
+                    )
+                    
+                except Exception as e:
+                    print(f"分析错误: {str(e)}")
+                    traceback.print_exc()
+                    return (
+                        gr.update(value=None),
+                        f"分析失败: {str(e)}"
+                    )
+
+            # 绑定事件
+            file_input.change(
+                fn=handle_file_upload,
+                inputs=[file_input],
+                outputs=[upload_status]  # 改为使用新的状态文本组件
             )
             
-            # 处理表格选择
+            analyze_btn.click(
+                fn=handle_analyze_click,
+                inputs=[user_id],
+                outputs=[
+                    category_table,
+                    analysis_result  # 用于显示状态消息
+                ]
+            )
+            
             category_table.select(
-                fn=self.handle_category_select,
+                fn=handle_category_select,
                 inputs=[category_table, user_id],
-                outputs=[analysis_result, selected_category]
+                outputs=[
+                    category_table,  # 保持表格状态
+                    analysis_result  # 显示分析结果或错误消息
+                ]
             )
-            
+
         return interface
-    
-    def get_category_data(self):
-        """获取垂类数据"""
-        # 这里可以根据实际数据结构调整
-        categories = [
-            ["7", "卡通形象", ""],
-            ["20", "实拍写真", ""],
-            ["30", "风景写真", ""],
-            ["31", "秋日写真", ""],
-            ["46", "毕业写真", ""],
-            ["55", "艺术绘画", ""],
-            ["63", "人像写真", ""],
-            ["77", "服装搭配", ""],
-            ["80", "宠物写真", ""],
-            ["88", "单手写真", ""],
-            ["90", "时钟写真", ""]
-        ]
-        return categories
-    
-    def handle_file_upload(self, file):
-        """处理文件上传，更新垂类数据量"""
-        if file is None:
-            return None
-            
-        try:
-            # 读取CSV文件
-            df = pd.read_csv(file.name)
-            self.app.df = df
-            
-            # 更新垂类数据量
-            categories = self.get_category_data()
-            for i, category in enumerate(categories):
-                count = len(df[df['聚类ID'] == int(category[0])])
-                categories[i][2] = str(count)
-            
-            return categories
-            
-        except Exception as e:
-            print(f"文件处理错误: {str(e)}")
-            return None
-    
-    def handle_category_select(self, evt: gr.SelectData, user_id):
-        """处理垂类选择"""
-        try:
-            if self.app.df is None:
-                return "请先上传CSV文件", None
-                
-            selected_category = evt.data[0]  # 获取选中行的垂类ID
-            print(f"选中垂类: {selected_category}")
-            
-            # 过滤该垂类的数据
-            category_df = self.app.df[self.app.df['聚类ID'] == int(selected_category)]
-            
-            if user_id:
-                category_df = category_df[category_df['用户UID'].astype(str) == str(user_id)]
-            
-            if len(category_df) == 0:
-                return "未找到相关数据", selected_category
-            
-            # 分析数据
-            results = self.app.analyze_user_prompts(category_df)
-            if results:
-                return results, selected_category
-            else:
-                return "数据分析失败", selected_category
-                
-        except Exception as e:
-            print(f"处理选择错误: {str(e)}")
-            return f"处理错误: {str(e)}", None
+
+    def get_dark_theme_style(self):
+        # 添加时间戳作为版本号
+        version = int(time.time())
+        return f"""
+        <style data-version="{version}">
+        :root {{
+            --background-base: #000000;
+            --background-primary: #1a1a1a;
+            --background-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --border-color: #404040;
+        }}
+
+        /* 添加命名空间避免样式冲突 */
+        .gradio-app-{version} {{
+            background-color: var(--background-base) !important;
+        }}
+
+        .gradio-app-{version} .gr-box {{
+            background-color: var(--background-primary) !important;
+            border-color: var(--border-color) !important;
+        }}
+
+        .gradio-app-{version} table {{
+            background-color: var(--background-primary) !important;
+        }}
+
+        .gradio-app-{version} th {{
+            background-color: var(--background-secondary) !important;
+            color: var(--text-primary) !important;
+        }}
+
+        .gradio-app-{version} td {{
+            color: var(--text-secondary) !important;
+        }}
+
+        .gradio-app-{version} label, 
+        .gradio-app-{version} .gr-text {{
+            color: var(--text-primary) !important;
+        }}
+        </style>
+
+        <script>
+        // 强制刷新样式
+        document.addEventListener('DOMContentLoaded', function() {{
+            document.querySelector('.gradio-container').classList.add('gradio-app-{version}');
+        }});
+        </script>
+        """
 
 if __name__ == "__main__":
     interface = GradioInterface()
     demo = interface.create_interface()
-    demo.launch() 
+    demo.launch(
+        server_name="0.0.0.0", 
+        server_port=7860,
+        show_error=True
+    ) 

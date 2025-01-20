@@ -207,12 +207,19 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         logger.info(f"Successfully connected to search endpoint at {full_url}")
                         logger.debug(f"Response headers: {dict(response.headers)}")
                         
-                        # More lenient tweet pattern
-                        tweet_pattern = r'<div class="tweet-content[^>]*>((?:(?!</div>).)*)</div>'
-                        matches = re.finditer(tweet_pattern, response.text, re.DOTALL)
+                        # Log the HTML structure we're trying to parse
+                        logger.info("HTML Structure Preview:")
+                        logger.info("=" * 80)
+                        logger.info(response.text[:2000])
+                        logger.info("=" * 80)
+                        
+                        # Simplified tweet pattern focusing on content only first
+                        tweet_pattern = r'<div class="tweet-content[^>]*>(.*?)</div>'
+                        matches = list(re.finditer(tweet_pattern, response.text, re.DOTALL))
                         found_tweets = False
                         
-                        logger.info("Starting tweet extraction from HTML...")
+                        logger.info(f"Found {len(matches)} potential tweets using pattern")
+                        
                         for match in matches:
                             if len(tweets) >= max_results:
                                 found_tweets = True
@@ -220,16 +227,43 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                                 break
                                 
                             raw_content = match.group(1).strip()
-                            logger.info(f"Found raw tweet content: {raw_content[:200]}...")
+                            logger.info(f"Raw tweet content found: {raw_content[:200]}")
                             
-                            # Clean HTML tags and entities
-                            content = re.sub(r'<[^>]+>', ' ', raw_content)
-                            content = re.sub(r'\s+', ' ', content)
-                            content = content.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"').replace("&#39;", "'")
-                            content = content.strip()
+                            # Validate content before processing
+                            if not raw_content or len(raw_content) < 5:
+                                logger.warning("Skipping too short content")
+                                continue
                             
-                            if not content:
-                                logger.warning("Skipping empty content after cleaning")
+                            # More thorough content cleaning
+                            try:
+                                # First remove nested tags if any
+                                content = re.sub(r'<(?!/?div)[^>]+>', '', raw_content)
+                                # Then remove any remaining HTML
+                                content = re.sub(r'<[^>]+>', '', content)
+                                # Normalize whitespace
+                                content = re.sub(r'\s+', ' ', content)
+                                # Handle common HTML entities
+                                entities = {
+                                    '&amp;': '&',
+                                    '&lt;': '<',
+                                    '&gt;': '>',
+                                    '&quot;': '"',
+                                    '&#39;': "'",
+                                    '&nbsp;': ' ',
+                                    '&ndash;': '-',
+                                    '&mdash;': '—'
+                                }
+                                for entity, char in entities.items():
+                                    content = content.replace(entity, char)
+                                content = content.strip()
+                                
+                                logger.info(f"Cleaned content: {content[:200]}")
+                                
+                                if not content or len(content) < 5:
+                                    logger.warning("Content too short after cleaning")
+                                    continue
+                            except Exception as e:
+                                logger.error(f"Error cleaning content: {str(e)}")
                                 continue
                             
                             # Look for metrics in surrounding context

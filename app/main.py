@@ -110,17 +110,22 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.info("Cache expired, fetching fresh results")
             del CACHE[cache_key]
 
-    # Multiple Nitter instances with fallback (expanded list for better availability)
+    # Multiple Nitter instances with fallback (expanded and curated list for better availability)
     instances = [
         "https://nitter.net",
         "https://nitter.privacydev.net",
-        "https://nitter.poast.org",
         "https://nitter.1d4.us",
         "https://nitter.kavin.rocks",
-        "https://nitter.unixfox.eu",
-        "https://nitter.rawbit.ninja",
-        "https://nitter.esmailelbob.xyz",
-        "https://nitter.d420.de"
+        "https://nitter.catsarch.com",
+        "https://nitter.ktachibana.party",
+        "https://nitter.freedit.eu",
+        "https://nitter.projectsegfau.lt",
+        "https://nitter.foss.wtf",
+        "https://nitter.priv.pw",
+        "https://nitter.bird.froth.zone",
+        "https://nitter.moomoo.me",
+        "https://nitter.weiler.rocks",
+        "https://nitter.sethforprivacy.com"
     ]
     
     # Log available instances
@@ -181,11 +186,13 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     instances = available_instances
     logger.info(f"Using available instances: {instances}")
     
-    # User-Agent rotation
+    # Enhanced User-Agent rotation with modern browser versions
     user_agents = [
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15'
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15',
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/120.0.0.0 Safari/537.36'
     ]
     
     # Enhanced rate limit tracking with longer cache
@@ -210,18 +217,28 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             # Enhanced rate limit and failure handling
             current_time = datetime.now()
             
-            # Skip if rate limited
-            if current_time < rate_limit_reset.get(instance, current_time):
-                logger.warning(f"Rate limit in effect for {instance}, skipping...")
-                continue
+            # Enhanced rate limit handling with dynamic backoff
+            if instance in rate_limit_reset:
+                reset_time = rate_limit_reset[instance]
+                if current_time < reset_time:
+                    wait_time = (reset_time - current_time).total_seconds()
+                    if wait_time <= 5:  # If less than 5 seconds left, just wait it out
+                        logger.info(f"Short rate limit wait for {instance}, waiting {wait_time:.1f}s")
+                        await asyncio.sleep(wait_time)
+                    else:
+                        logger.warning(f"Rate limit in effect for {instance}, skipping... (resets in {wait_time:.1f}s)")
+                        continue
                 
-            # Skip if too many recent failures
+            # More forgiving failure handling
             failure_count = instance_failures.get(instance, 0)
-            if failure_count > 3:
-                backoff_time = min(2 ** failure_count, 300)  # Cap at 5 minutes
+            if failure_count > 2:  # More forgiving threshold
+                backoff_time = min(2 ** failure_count, 30)  # Cap at 30 seconds
                 logger.warning(f"Instance {instance} has failed {failure_count} times, backing off for {backoff_time}s")
                 await asyncio.sleep(backoff_time)
-                instance_failures[instance] = max(0, failure_count - 1)  # Reduce failure count after backoff
+                instance_failures[instance] = max(0, failure_count - 2)  # Reduce failure count more aggressively
+                
+            # Add detailed logging
+            logger.info(f"Trying instance {instance} (failures: {failure_count})")
                 
             # Rotate User-Agent
             headers = {'User-Agent': random.choice(user_agents)}
@@ -357,12 +374,16 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         
                         # Try multiple tweet patterns with metrics
                         tweet_patterns = [
-                            # Pattern 1: Basic tweet content with metrics
-                            r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="tweet-stat">.*?(\d+)</span>.*?<span class="tweet-stat">.*?(\d+)</span>',
-                            # Pattern 2: Timeline item with content and metrics
-                            r'<div class="timeline-item".*?<div class="tweet-content"[^>]*>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="tweet-stat">.*?(\d+)</span>.*?<span class="tweet-stat">.*?(\d+)</span>',
-                            # Pattern 3: Simpler tweet content pattern as fallback
-                            r'<div class="tweet-content"[^>]*>(.*?)</div>'
+                            # Pattern 1: Most permissive tweet content
+                            r'<div[^>]*tweet-content[^>]*>(.*?)</div>',
+                            # Pattern 2: Basic tweet content with metrics
+                            r'<div[^>]*tweet-content[^>]*>(.*?)</div>.*?<div[^>]*tweet-stats[^>]*>.*?<span[^>]*>.*?(\d+)</span>.*?<span[^>]*>.*?(\d+)</span>',
+                            # Pattern 3: Timeline item with content and metrics
+                            r'<div[^>]*timeline-item[^>]*>.*?<div[^>]*tweet-content[^>]*>(.*?)</div>.*?<div[^>]*tweet-stats[^>]*>.*?<span[^>]*>.*?(\d+)</span>.*?<span[^>]*>.*?(\d+)</span>',
+                            # Pattern 4: Any div with tweet-like content
+                            r'<div[^>]*>(.*?)</div>(?=.*?<span[^>]*>.*?(\d+)</span>.*?<span[^>]*>.*?(\d+)</span>)',
+                            # Pattern 5: Extremely permissive fallback
+                            r'<div[^>]*>(.*?)</div>'
                         ]
                         
                         # Log which patterns we're trying
@@ -516,10 +537,13 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     
                     if response.status_code == 429:
                         # Update rate limit reset time
-                        retry_after = min(int(response.headers.get('retry-after', 60)), 120)  # Cap at 2 minutes
+                        retry_after = min(int(response.headers.get('retry-after', 15)), 30)  # Cap at 30 seconds
                         rate_limit_reset[instance] = datetime.now() + timedelta(seconds=retry_after)
                         instance_failures[instance] = instance_failures.get(instance, 0) + 1
                         logger.warning(f"Rate limited on {instance}, will retry after {retry_after}s (failure count: {instance_failures[instance]})")
+                        # Log response details for debugging
+                        logger.info(f"Response headers from {instance}: {dict(response.headers)}")
+                        logger.info(f"Response content preview: {response.text[:500]}")
                         # Try next instance instead of continuing
                         break
                         

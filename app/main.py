@@ -19,28 +19,38 @@ logger = logging.getLogger(__name__)
 CACHE: Dict[str, Tuple[List[Dict[str, Any]], datetime]] = {}
 
 async def retry_get(client: httpx.AsyncClient, url: str, max_retries: int = 3) -> Optional[httpx.Response]:
+    instance = url.split('/')[2]
+    user_agents = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15'
+    ]
+    
     for attempt in range(max_retries):
         try:
-            delay = (2 ** attempt) * 2  # Increased exponential backoff
+            delay = min((2 ** attempt) * 2, 30)  # Cap max delay at 30 seconds
             if attempt > 0:
-                logger.info(f"Waiting {delay} seconds before retry...")
+                logger.info(f"Waiting {delay} seconds before retry for {instance}...")
                 await asyncio.sleep(delay)
             
-            logger.info(f"Attempting request to {url} (attempt {attempt + 1}/{max_retries})")
-            logger.info(f"Attempting request to {url} with instance {url.split('/')[2]}")
+            logger.info(f"Attempting request to {instance} (attempt {attempt + 1}/{max_retries})")
             
-            # Use longer timeout for RSS feeds
-            timeout = httpx.Timeout(30.0, connect=10.0, read=20.0)
+            # Rotate User-Agent for each attempt
+            current_user_agent = user_agents[attempt % len(user_agents)]
+            
+            # Use shorter timeouts to fail fast
+            timeout = httpx.Timeout(15.0, connect=5.0, read=10.0)
             
             response = await client.get(
                 url,
                 timeout=timeout,
                 follow_redirects=True,
                 headers={
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                    'Accept': 'application/rss+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'User-Agent': current_user_agent,
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                     'Accept-Language': 'en-US,en;q=0.5',
-                    'Connection': 'keep-alive'
+                    'Connection': 'keep-alive',
+                    'Cache-Control': 'no-cache'
                 }
             )
             
@@ -52,15 +62,23 @@ async def retry_get(client: httpx.AsyncClient, url: str, max_retries: int = 3) -
                 logger.error(f"Response headers: {dict(response.headers)}")
                 logger.error(f"Response text: {response.text[:500]}...")
             
-            # Don't raise for 429, handle it in the retry loop
-            if response.status_code == 429:
-                retry_after = int(response.headers.get('retry-after', delay))
-                logger.warning(f"Rate limited. Waiting {retry_after} seconds...")
+            # Handle various response status codes
+            if response.status_code == 200:
+                logger.info(f"Successfully received response from {instance}")
+                return response
+            elif response.status_code == 429:
+                retry_after = min(int(response.headers.get('retry-after', delay)), 30)
+                logger.warning(f"Rate limited by {instance}. Waiting {retry_after} seconds...")
                 await asyncio.sleep(retry_after)
                 continue
+            elif response.status_code in [502, 503, 504]:
+                logger.warning(f"{instance} returned {response.status_code}, may be temporarily unavailable")
+                raise httpx.HTTPError(f"Service unavailable: {response.status_code}")
+            else:
+                logger.error(f"Unexpected status code {response.status_code} from {instance}")
+                response.raise_for_status()
                 
-            response.raise_for_status()
-            return response
+            return None
             
         except httpx.TimeoutException:
             logger.warning(f"Timeout on attempt {attempt + 1} for {url}")
@@ -132,12 +150,15 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     logger.info(f"Available instances after health check: {available_instances}")
 
     if not available_instances:
+        logger.error("No Nitter instances are available after health check")
         raise HTTPException(
             status_code=503,
-            detail="No Nitter instances are currently available"
+            detail="No Nitter instances are currently available. Please try again later."
         )
 
+    # Update instances list with only available ones
     instances = available_instances
+    logger.info(f"Using available instances: {instances}")
     
     # User-Agent rotation
     user_agents = [
@@ -441,8 +462,24 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
 
 @app.get("/search")
 async def search_tweets(query: str, max_results: int = 10) -> Dict[str, Any]:
-    tweets = await fetch_tweets(query, max_results)
-    return {"results": tweets}
+    try:
+        tweets = await fetch_tweets(query, max_results)
+        logger.info(f"Successfully fetched {len(tweets)} tweets for query: {query}")
+        return {
+            "status": "success",
+            "results": tweets,
+            "query": query,
+            "count": len(tweets)
+        }
+    except HTTPException as e:
+        logger.error(f"HTTP error during tweet search: {str(e)}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error during tweet search: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error: {str(e)}"
+        )
 
 @app.get("/health")
 async def health_check():

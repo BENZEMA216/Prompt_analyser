@@ -119,92 +119,44 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.info("Cache expired, fetching fresh results")
             del CACHE[cache_key]
 
-    # Reduced list of most reliable Nitter instances
+    # Extended list of Nitter instances for better availability
     instances = [
         "https://nitter.net",
         "https://nitter.1d4.us",
-        "https://nitter.kavin.rocks"
+        "https://nitter.kavin.rocks",
+        "https://nitter.privacydev.net",
+        "https://nitter.projectsegfau.lt",
+        "https://nitter.in.projectsegfau.lt"
     ]
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
     logger.info(f"Using primary Nitter instances: {instances}")
 
-    # More conservative instance checking
+    # Simple instance availability check
     async def check_instance(instance: str) -> bool:
         try:
-            # Only check search page to reduce requests
             url = f"{instance}/search"
-            timeout = httpx.Timeout(30.0, connect=10.0)  # Even longer timeouts
-            headers = {
-                'User-Agent': random.choice(user_agents),
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5',
-                'Cache-Control': 'no-cache',
-                'Connection': 'keep-alive',
-                'Upgrade-Insecure-Requests': '1'
-            }
-            
-            # Add longer delay between instance checks
-            await asyncio.sleep(random.uniform(5, 10))
+            timeout = httpx.Timeout(5.0, connect=3.0)
+            headers = {'User-Agent': random.choice(user_agents)}
             
             async with httpx.AsyncClient(timeout=timeout) as client:
-                try:
-                    # First try a HEAD request to check availability
-                    head_response = await client.head(url, headers=headers, follow_redirects=True)
-                    
-                    if head_response.status_code == 429:
-                        logger.warning(f"Rate limited during instance check for {instance}")
-                        await asyncio.sleep(random.uniform(15, 30))  # Much longer delay on rate limit
-                        return False
-                        
-                    if head_response.status_code != 200:
-                        logger.warning(f"Instance {instance} returned status {head_response.status_code}")
-                        return False
-                        
-                    # If HEAD request succeeds, try a GET request
-                    await asyncio.sleep(random.uniform(2, 5))  # Add delay between HEAD and GET
-                    response = await client.get(url, headers=headers, follow_redirects=True)
-                    
-                    if response.status_code == 200:
-                        # Verify we got HTML content
-                        content_type = response.headers.get('content-type', '').lower()
-                        if 'text/html' in content_type:
-                            logger.info(f"Instance {instance} is available")
-                            return True
-                    return False
-                except Exception as e:
-                    logger.debug(f"Failed to check {url}: {str(e)}")
-                    return False
+                response = await client.head(url, headers=headers, follow_redirects=True)
+                return response.status_code == 200
         except Exception as e:
-            logger.warning(f"Failed to check instance {instance}: {str(e)}")
+            logger.warning(f"Instance {instance} check failed: {str(e)}")
             return False
     
-    # Try instances one at a time with much longer delays
-    available_instances = []
-    retry_count = 0
-    max_retries = 3
+    # Quick parallel instance checks
+    async def check_all_instances():
+        tasks = [check_instance(instance) for instance in instances]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        return [inst for inst, result in zip(instances, results) if isinstance(result, bool) and result]
     
-    while not available_instances and retry_count < max_retries:
-        for instance in instances:
-            # Much longer delay between instance attempts
-            delay = random.uniform(20, 30) * (retry_count + 1)
-            logger.info(f"Waiting {delay:.1f}s before trying {instance} (attempt {retry_count + 1}/{max_retries})")
-            await asyncio.sleep(delay)
-            
-            result = await check_instance(instance)
-            if result:
-                available_instances = [instance]
-                logger.info(f"Found working instance: {instance}")
-                break
-            else:
-                logger.warning(f"Instance {instance} not available on attempt {retry_count + 1}")
-        
-        if not available_instances:
-            retry_count += 1
-            if retry_count < max_retries:
-                logger.info(f"No instances available, starting retry {retry_count + 1}/{max_retries}")
-            else:
-                logger.warning("Max retries reached, no instances available")
+    available_instances = await check_all_instances()
+    if not available_instances:
+        logger.warning("No instances available on first try, retrying once with delay")
+        await asyncio.sleep(2)
+        available_instances = await check_all_instances()
     
     logger.info(f"Found {len(available_instances)} available instances: {available_instances}")
             

@@ -119,60 +119,59 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.info("Cache expired, fetching fresh results")
             del CACHE[cache_key]
 
-    # Multiple Nitter instances with fallback (expanded and curated list for better availability)
+    # Reduced list of most reliable Nitter instances
     instances = [
         "https://nitter.net",
-        "https://nitter.privacydev.net",
         "https://nitter.1d4.us",
-        "https://nitter.kavin.rocks",
-        "https://nitter.catsarch.com",
-        "https://nitter.ktachibana.party",
-        "https://nitter.freedit.eu",
-        "https://nitter.projectsegfau.lt",
-        "https://nitter.foss.wtf",
-        "https://nitter.priv.pw",
-        "https://nitter.bird.froth.zone",
-        "https://nitter.moomoo.me",
-        "https://nitter.weiler.rocks",
-        "https://nitter.sethforprivacy.com"
+        "https://nitter.kavin.rocks"
     ]
     
-    # Log available instances
-    logger.info(f"Starting tweet search with {len(instances)} instances")
-    
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
-    logger.info(f"Available Nitter instances: {instances}")
+    logger.info(f"Using primary Nitter instances: {instances}")
 
-    # Verify instance availability with more lenient checks
-    available_instances = []
+    # More conservative instance checking
     async def check_instance(instance: str) -> bool:
         try:
             # Only check search page to reduce requests
             url = f"{instance}/search"
-            timeout = httpx.Timeout(15.0, connect=8.0)  # Longer timeouts
+            timeout = httpx.Timeout(30.0, connect=10.0)  # Even longer timeouts
             headers = {
-                'User-Agent': random.choice(user_agents),  # Use rotating user agents
+                'User-Agent': random.choice(user_agents),
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 'Accept-Language': 'en-US,en;q=0.5',
-                'Cache-Control': 'no-cache'
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1'
             }
             
-            # Add delay between instance checks
-            await asyncio.sleep(random.uniform(2, 5))
+            # Add longer delay between instance checks
+            await asyncio.sleep(random.uniform(5, 10))
             
             async with httpx.AsyncClient(timeout=timeout) as client:
                 try:
-                    response = await client.get(url, headers=headers, follow_redirects=True)
-                    if response.status_code == 200:
-                        logger.info(f"Instance {instance} is available")
-                        return True
-                    elif response.status_code == 429:
+                    # First try a HEAD request to check availability
+                    head_response = await client.head(url, headers=headers, follow_redirects=True)
+                    
+                    if head_response.status_code == 429:
                         logger.warning(f"Rate limited during instance check for {instance}")
-                        await asyncio.sleep(random.uniform(5, 10))  # Longer delay on rate limit
+                        await asyncio.sleep(random.uniform(15, 30))  # Much longer delay on rate limit
                         return False
-                    else:
-                        logger.warning(f"Instance {instance} returned status {response.status_code}")
+                        
+                    if head_response.status_code != 200:
+                        logger.warning(f"Instance {instance} returned status {head_response.status_code}")
                         return False
+                        
+                    # If HEAD request succeeds, try a GET request
+                    await asyncio.sleep(random.uniform(2, 5))  # Add delay between HEAD and GET
+                    response = await client.get(url, headers=headers, follow_redirects=True)
+                    
+                    if response.status_code == 200:
+                        # Verify we got HTML content
+                        content_type = response.headers.get('content-type', '').lower()
+                        if 'text/html' in content_type:
+                            logger.info(f"Instance {instance} is available")
+                            return True
+                    return False
                 except Exception as e:
                     logger.debug(f"Failed to check {url}: {str(e)}")
                     return False
@@ -180,18 +179,32 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.warning(f"Failed to check instance {instance}: {str(e)}")
             return False
     
-    # Check instances sequentially to avoid rate limits
-    results = []
-    for instance in instances:
-        result = await check_instance(instance)
-        results.append(result)
-        if result:  # If we found a working instance, no need to check more
-            break
+    # Try instances one at a time with much longer delays
+    available_instances = []
+    retry_count = 0
+    max_retries = 3
     
-    available_instances = [
-        instance for instance, is_available in zip(instances, results)
-        if isinstance(is_available, bool) and is_available
-    ]
+    while not available_instances and retry_count < max_retries:
+        for instance in instances:
+            # Much longer delay between instance attempts
+            delay = random.uniform(20, 30) * (retry_count + 1)
+            logger.info(f"Waiting {delay:.1f}s before trying {instance} (attempt {retry_count + 1}/{max_retries})")
+            await asyncio.sleep(delay)
+            
+            result = await check_instance(instance)
+            if result:
+                available_instances = [instance]
+                logger.info(f"Found working instance: {instance}")
+                break
+            else:
+                logger.warning(f"Instance {instance} not available on attempt {retry_count + 1}")
+        
+        if not available_instances:
+            retry_count += 1
+            if retry_count < max_retries:
+                logger.info(f"No instances available, starting retry {retry_count + 1}/{max_retries}")
+            else:
+                logger.warning("Max retries reached, no instances available")
     
     logger.info(f"Found {len(available_instances)} available instances: {available_instances}")
             
@@ -392,33 +405,25 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                             logger.info(tweet_divs[0][:200])
                         logger.info("=" * 80)
                         
-                        # Try multiple tweet patterns with metrics
-                        tweet_patterns = [
-                            # Pattern 1: Most permissive tweet content
-                            r'<div[^>]*tweet-content[^>]*>(.*?)</div>',
-                            # Pattern 2: Basic tweet content with metrics
-                            r'<div[^>]*tweet-content[^>]*>(.*?)</div>.*?<div[^>]*tweet-stats[^>]*>.*?<span[^>]*>.*?(\d+)</span>.*?<span[^>]*>.*?(\d+)</span>',
-                            # Pattern 3: Timeline item with content and metrics
-                            r'<div[^>]*timeline-item[^>]*>.*?<div[^>]*tweet-content[^>]*>(.*?)</div>.*?<div[^>]*tweet-stats[^>]*>.*?<span[^>]*>.*?(\d+)</span>.*?<span[^>]*>.*?(\d+)</span>',
-                            # Pattern 4: Any div with tweet-like content
-                            r'<div[^>]*>(.*?)</div>(?=.*?<span[^>]*>.*?(\d+)</span>.*?<span[^>]*>.*?(\d+)</span>)',
-                            # Pattern 5: Extremely permissive fallback
-                            r'<div[^>]*>(.*?)</div>'
-                        ]
+                        # Single, reliable tweet pattern for better extraction
+                        tweet_pattern = r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>'
+                        logger.info("Using optimized tweet extraction pattern")
                         
-                        # Log which patterns we're trying
-                        logger.info("Attempting to match tweets with multiple patterns")
+                        # Try to match tweets with our optimized pattern
+                        logger.info("Attempting to match tweets with optimized pattern")
+                        matches = list(re.finditer(tweet_pattern, response.text, re.DOTALL))
                         
-                        matches = []
-                        for pattern in tweet_patterns:
-                            logger.info(f"Trying pattern: {pattern}")
-                            current_matches = list(re.finditer(pattern, response.text, re.DOTALL | re.IGNORECASE))
-                            if current_matches:
-                                logger.info(f"Found {len(current_matches)} matches with pattern")
-                                matches.extend(current_matches)
-                                # Don't break here - try all patterns to find as many tweets as possible
-                            else:
-                                logger.warning(f"No matches found with pattern")
+                        if matches:
+                            logger.info(f"Found {len(matches)} potential tweets")
+                            # Log a sample match for debugging
+                            if matches:
+                                sample = matches[0].group(1)[:100]
+                                logger.info(f"Sample tweet content: {sample}...")
+                        else:
+                            logger.warning("No tweet matches found")
+                            # Log HTML structure for debugging
+                            logger.debug("HTML preview:")
+                            logger.debug(response.text[:500])
                                 
                         # Log HTML structure if no matches found with any pattern
                         if not matches:
@@ -569,37 +574,61 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         
                     if response.status_code == 200:
                         try:
-                            # Updated pattern based on actual Nitter HTML structure
-                            tweet_pattern = r'<div class="timeline-item.*?<div class="tweet-content.*?>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="icon-retweet"></span>\s*(\d+).*?<span class="icon-heart"></span>\s*(\d+)'
+                            # Log response info for debugging
+                            logger.info(f"Response from {instance} (status {response.status_code}):")
+                            logger.info(f"Content length: {len(response.text)} bytes")
                             
-                            matches = list(re.finditer(tweet_pattern, response.text, re.DOTALL))
-                            logger.info(f"Found {len(matches)} potential tweets in HTML response")
-                            logger.debug(f"HTML content snippet: {response.text[:500]}...")
+                            # Single, reliable pattern for tweet extraction
+                            tweet_pattern = r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span[^>]*>(\d+)</span>.*?<span[^>]*>(\d+)</span>'
+                            matches = list(re.finditer(tweet_pattern, response.text, re.DOTALL | re.IGNORECASE))
+                            
+                            if not matches:
+                                logger.warning(f"No tweets found in response from {instance}")
+                                logger.info("HTML Structure Analysis:")
+                                logger.info(f"- timeline-items: {len(re.findall(r'<div class="timeline-item"', response.text))}")
+                                logger.info(f"- tweet-content divs: {len(re.findall(r'<div class="tweet-content"', response.text))}")
+                                logger.info(f"First 1000 chars of response:")
+                                logger.info(response.text[:1000])
+                                continue  # Try next instance
+                                
+                            logger.info(f"Found {len(matches)} tweets")
                             
                             for match in matches:
                                 if len(tweets) >= max_results:
                                     break
                                     
                                 try:
-                                    content = match.group(1).strip()
+                                    # Extract and clean content
+                                    content = match.group(1)
+                                    content = re.sub(r'<[^>]+>', '', content)  # Remove HTML tags
+                                    content = re.sub(r'&\w+;', lambda e: {
+                                        '&amp;': '&',
+                                        '&lt;': '<',
+                                        '&gt;': '>',
+                                        '&quot;': '"',
+                                        '&#39;': "'",
+                                        '&nbsp;': ' '
+                                    }.get(e.group(), e.group()), content)  # Handle entities
+                                    content = re.sub(r'\s+', ' ', content)  # Normalize whitespace
+                                    content = content.strip()
+                                    
+                                    # Skip if content is too short or contains error messages
+                                    if not content or len(content) < 5 or any(x in content.lower() for x in ['no results', 'error', 'try again']):
+                                        continue
+                                        
+                                    # Extract metrics
                                     retweets = int(match.group(2))
                                     likes = int(match.group(3))
                                     
-                                    # Clean content
-                                    content = re.sub(r'<[^>]+>', '', content)
-                                    content = re.sub(r'\s+', ' ', content)
-                                    content = content.strip()
-                                    
-                                    if content and len(content) > 5:
-                                        tweet_data = {
-                                            "content": content,
-                                            "metrics": {
-                                                "retweets": retweets,
-                                                "likes": likes
-                                            }
+                                    tweet_data = {
+                                        "content": content,
+                                        "metrics": {
+                                            "retweets": retweets,
+                                            "likes": likes
                                         }
-                                        tweets.append(tweet_data)
-                                        logger.info(f"Extracted tweet: {content[:100]}...")
+                                    }
+                                    tweets.append(tweet_data)
+                                    logger.info(f"Extracted tweet: {content[:100]}...")
                                 except Exception as e:
                                     logger.error(f"Error processing tweet match: {str(e)}")
                                     continue

@@ -93,10 +93,14 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
 
     # Multiple Nitter instances with fallback
     instances = [
-        "https://nitter.privacytools.io",
+        "https://nitter.net",
+        "https://nitter.1d4.us",
         "https://nitter.kavin.rocks",
-        "https://nitter.net"
+        "https://nitter.unixfox.eu"
     ]
+    
+    logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
+    logger.info(f"Available Nitter instances: {instances}")
 
     # Verify instance availability before using
     available_instances = []
@@ -104,14 +108,28 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         try:
             health_check_url = f"{instance}/robots.txt"
             logger.info(f"Checking availability of {instance}")
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                response = await client.get(health_check_url)
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.get(health_check_url, follow_redirects=True)
+                logger.info(f"Health check response from {instance}: {response.status_code}")
+                
                 if response.status_code == 200:
                     available_instances.append(instance)
                     logger.info(f"Instance {instance} is available")
+                else:
+                    logger.warning(f"Instance {instance} returned status {response.status_code}")
+                    if 'location' in response.headers:
+                        logger.warning(f"Redirect location: {response.headers['location']}")
+        except httpx.TimeoutException:
+            logger.warning(f"Instance {instance} timed out during health check")
+            continue
+        except httpx.HTTPError as e:
+            logger.warning(f"HTTP error checking {instance}: {str(e)}")
+            continue
         except Exception as e:
             logger.warning(f"Instance {instance} is not available: {str(e)}")
             continue
+            
+    logger.info(f"Available instances after health check: {available_instances}")
 
     if not available_instances:
         raise HTTPException(

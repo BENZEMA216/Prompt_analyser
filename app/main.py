@@ -5,6 +5,7 @@ import asyncio
 import logging
 import re
 import random
+import ssl
 from datetime import datetime, timedelta
 from functools import lru_cache
 import hashlib
@@ -121,13 +122,13 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
 
     # Curated list of reliable Nitter instances with rate limits
     instances = [
-        "https://nitter.net",
-        "https://nitter.cz",
-        "https://nitter.foss.wtf",
-        "https://nitter.priv.pw",
-        "https://nitter.poast.org",
-        "https://nitter.mint.lgbt",
-        "https://nitter.woodland.cafe"
+        "https://nitter.privacydev.net",
+        "https://nitter.1d4.us",
+        "https://nitter.unixfox.eu",
+        "https://nitter.projectsegfau.lt",
+        "https://nitter.in.projectsegfau.lt",
+        "https://nitter.tux.pizza",
+        "https://nitter.salastil.com"
     ]
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
@@ -137,43 +138,74 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     async def check_instance(instance: str) -> bool:
         try:
             url = f"{instance}/search?f=tweets&q=test"
-            timeout = httpx.Timeout(10.0, connect=5.0)
+            timeout = httpx.Timeout(15.0, connect=10.0)
             headers = {
                 'User-Agent': random.choice(user_agents),
-                'Accept': 'text/html,application/xhtml+xml',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9',
                 'Accept-Language': 'en-US,en;q=0.5',
-                'Cache-Control': 'no-cache'
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1'
             }
             
             # Add delay to avoid rate limiting
-            await asyncio.sleep(random.uniform(1.0, 3.0))
+            await asyncio.sleep(random.uniform(2.0, 5.0))
             
-            async with httpx.AsyncClient(timeout=timeout, limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)) as client:
-                response = await client.get(url, headers=headers, follow_redirects=True)
-                
-                # Handle rate limiting with exponential backoff
-                if response.status_code == 429:
-                    retry_after = int(response.headers.get('Retry-After', '15'))
-                    logger.warning(f"Rate limited by {instance}, waiting {retry_after}s")
-                    await asyncio.sleep(retry_after)
-                    return False
-                
-                if response.status_code != 200:
-                    logger.warning(f"Instance {instance} returned status {response.status_code}")
+            # Configure SSL context to be more permissive
+            ssl_context = httpx.create_ssl_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+            
+            async with httpx.AsyncClient(
+                timeout=timeout,
+                limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
+                verify=False,  # Disable SSL verification
+                headers=headers,
+                follow_redirects=True
+            ) as client:
+                try:
+                    response = await client.get(url)
+                    logger.info(f"Response from {instance}: status={response.status_code}, url={response.url}")
+                    
+                    # Handle rate limiting with exponential backoff
+                    if response.status_code == 429:
+                        retry_after = int(response.headers.get('Retry-After', '15'))
+                        logger.warning(f"Rate limited by {instance}, waiting {retry_after}s")
+                        await asyncio.sleep(retry_after)
+                        return False
+                    
+                    if response.status_code != 200:
+                        logger.warning(f"Instance {instance} returned status {response.status_code}")
+                        return False
+                        
+                    # Check if we're getting redirected to auth
+                    if any(marker in str(response.url).lower() for marker in ['auth', 'login', 'captcha', 'blocked']):
+                        logger.warning(f"Instance {instance} requires authentication")
+                        return False
+                        
+                    # Log response content for debugging
+                    content_preview = response.text[:200].replace('\n', ' ')
+                    logger.info(f"Content preview from {instance}: {content_preview}...")
+                    
+                    # Verify we can access tweet content
+                    if 'tweet-content' not in response.text:
+                        logger.warning(f"Instance {instance} doesn't return tweet content")
+                        return False
+                    
+                    tweet_count = response.text.count('tweet-content')
+                    logger.info(f"Found {tweet_count} tweet-content elements in {instance}")
+                    
+                    if tweet_count > 0:
+                        logger.info(f"Instance {instance} is healthy with {tweet_count} tweets")
+                        return True
                     return False
                     
-                # Check if we're getting redirected to auth
-                if any(marker in str(response.url).lower() for marker in ['auth', 'login', 'captcha']):
-                    logger.warning(f"Instance {instance} requires authentication")
+                except httpx.TimeoutException:
+                    logger.warning(f"Timeout connecting to {instance}")
                     return False
-                    
-                # Verify we can access tweet content
-                if 'tweet-content' not in response.text:
-                    logger.warning(f"Instance {instance} doesn't return tweet content")
+                except httpx.ConnectError:
+                    logger.warning(f"Connection error for {instance}")
                     return False
-                
-                logger.info(f"Instance {instance} is healthy")
-                return True
                 
         except Exception as e:
             logger.warning(f"Instance {instance} check failed: {str(e)}")

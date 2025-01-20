@@ -25,15 +25,19 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
     
-    # Use aggressive timeouts for faster response
-    timeout = httpx.Timeout(15.0, connect=5.0, read=10.0)
+    # Use more lenient timeouts
+    timeout = httpx.Timeout(30.0, connect=10.0, read=20.0)
     limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
     
-    # Simple headers
+    # Enhanced headers to look more like a real browser
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
+        'Upgrade-Insecure-Requests': '1'
     }
 
     # Simple instance check
@@ -41,26 +45,40 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         """Quick check if instance is responding."""
         try:
             url = f"{instance}/search?f=tweets&q=test"
-            timeout = httpx.Timeout(5.0, connect=3.0)
+            timeout = httpx.Timeout(10.0, connect=5.0)
             
             async with httpx.AsyncClient(
                 timeout=timeout,
                 headers=headers,
                 verify=False,  # Disable SSL verification temporarily
-                follow_redirects=True
+                follow_redirects=True,
+                http2=True
             ) as client:
+                logger.info(f"Testing instance {instance}...")
                 response = await client.get(url)
                 
                 if response.status_code != 200:
-                    logger.warning(f"Instance check failed with status {response.status_code}")
+                    logger.warning(f"Instance {instance} failed with status {response.status_code}")
+                    if response.status_code == 302:
+                        logger.warning(f"Redirect location: {response.headers.get('location', 'unknown')}")
                     return False
                 
                 if 'tweet-content' not in response.text:
-                    logger.warning("No tweet content found in response")
+                    logger.warning(f"Instance {instance} returned no tweet content")
                     return False
                 
                 logger.info(f"Successfully connected to {instance}")
                 return True
+                
+        except httpx.TimeoutException as e:
+            logger.warning(f"Instance {instance} timed out: {str(e)}")
+            return False
+        except httpx.HTTPError as e:
+            logger.warning(f"Instance {instance} HTTP error: {str(e)}")
+            return False
+        except Exception as e:
+            logger.warning(f"Instance {instance} error: {str(e)}")
+            return False
                 
         except Exception as e:
             logger.warning(f"Instance check failed: {str(e)}")

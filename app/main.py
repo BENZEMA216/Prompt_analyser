@@ -186,48 +186,83 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         logger.info(f"Successfully connected to search endpoint at {full_url}")
                         logger.debug(f"Response headers: {dict(response.headers)}")
                         
-                        # Simplified tweet pattern focusing on content and basic metrics
-                        tweet_pattern = r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats">(.*?)</div>'
+                        # More lenient tweet pattern
+                        tweet_pattern = r'<div class="tweet-content[^>]*>((?:(?!</div>).)*)</div>'
                         matches = re.finditer(tweet_pattern, response.text, re.DOTALL)
                         found_tweets = False
                         
+                        logger.info("Starting tweet extraction from HTML...")
                         for match in matches:
                             if len(tweets) >= max_results:
                                 found_tweets = True
+                                logger.info(f"Reached max_results limit of {max_results}")
                                 break
                                 
                             raw_content = match.group(1).strip()
-                            stats_html = match.group(2)
+                            logger.info(f"Found raw tweet content: {raw_content[:200]}...")
                             
                             # Clean HTML tags and entities
-                            content = re.sub(r'<[^>]+>', ' ', raw_content)  # Replace tags with space
-                            content = re.sub(r'\s+', ' ', content)  # Normalize whitespace
+                            content = re.sub(r'<[^>]+>', ' ', raw_content)
+                            content = re.sub(r'\s+', ' ', content)
                             content = content.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"').replace("&#39;", "'")
                             content = content.strip()
                             
-                            if not content:  # Skip if content is empty after cleaning
+                            if not content:
+                                logger.warning("Skipping empty content after cleaning")
                                 continue
                             
-                            # Extract metrics from stats HTML
+                            # Look for metrics in surrounding context
+                            context_start = max(0, match.start() - 200)
+                            context_end = min(len(response.text), match.end() + 200)
+                            context = response.text[context_start:context_end]
+                            
                             retweets = 0
                             likes = 0
                             
-                            rt_match = re.search(r'(\d+)\s*Retweets?', stats_html)
-                            if rt_match:
-                                retweets = int(rt_match.group(1))
-                                
-                            like_match = re.search(r'(\d+)\s*Likes?', stats_html)
-                            if like_match:
-                                likes = int(like_match.group(1))
+                            # Try multiple metric patterns
+                            rt_patterns = [
+                                r'(\d+)\s*Retweets?',
+                                r'(\d+)\s*RT',
+                                r'icon-retweet[^>]*></span>\s*(\d+)',
+                                r'retweet.*?(\d+)'
+                            ]
                             
-                            tweets.append({
+                            like_patterns = [
+                                r'(\d+)\s*Likes?',
+                                r'(\d+)\s*Like',
+                                r'icon-heart[^>]*></span>\s*(\d+)',
+                                r'like.*?(\d+)'
+                            ]
+                            
+                            for pattern in rt_patterns:
+                                rt_match = re.search(pattern, context, re.I)
+                                if rt_match:
+                                    try:
+                                        retweets = int(rt_match.group(1))
+                                        logger.info(f"Found retweets: {retweets}")
+                                        break
+                                    except (ValueError, IndexError):
+                                        continue
+                                        
+                            for pattern in like_patterns:
+                                like_match = re.search(pattern, context, re.I)
+                                if like_match:
+                                    try:
+                                        likes = int(like_match.group(1))
+                                        logger.info(f"Found likes: {likes}")
+                                        break
+                                    except (ValueError, IndexError):
+                                        continue
+                            
+                            tweet_data = {
                                 "content": content,
                                 "metrics": {
                                     "retweets": retweets,
                                     "likes": likes
                                 }
-                            })
-                            logger.info(f"Extracted tweet: {content[:100]}...")
+                            }
+                            tweets.append(tweet_data)
+                            logger.info(f"Successfully extracted tweet: {content[:100]}...")
                             found_tweets = True
                             
                             if found_tweets:

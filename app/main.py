@@ -293,16 +293,12 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         
                         # Try multiple tweet patterns with metrics
                         tweet_patterns = [
-                            # Pattern 1: Basic timeline item with tweet stats
-                            r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats">[^<]*<span[^>]*>(\d+)</span>[^<]*<span[^>]*>(\d+)</span>',
-                            # Pattern 2: Tweet content with icon-based stats
-                            r'<div class="tweet-content[^>]*>(.*?)</div>.*?<span class="icon-retweet"></span>\s*<span[^>]*>(\d+)</span>.*?<span class="icon-heart"></span>\s*<span[^>]*>(\d+)</span>',
-                            # Pattern 3: Timeline item with icon-based stats
-                            r'<div class="timeline-item.*?<div class="tweet-content.*?>(.*?)</div>.*?<span class="icon-retweet"></span>\s*<span[^>]*>(\d+)</span>.*?<span class="icon-heart"></span>\s*<span[^>]*>(\d+)</span>',
-                            # Pattern 4: Tweet body with generic stats
-                            r'<div class="tweet-body.*?<div class="tweet-content.*?>(.*?)</div>.*?<div class="tweet-stats">[^<]*<span[^>]*>(\d+)</span>[^<]*<span[^>]*>(\d+)</span>',
-                            # Pattern 5: Timeline item with media content
-                            r'<div class="timeline-item[^>]*>.*?<div class="tweet-content media-body[^>]*>(.*?)</div>.*?<div class="tweet-stats">[^<]*<span[^>]*>(\d+)</span>[^<]*<span[^>]*>(\d+)</span>'
+                            # Pattern 1: Basic tweet content
+                            r'<div class="tweet-content">(.*?)</div>',
+                            # Pattern 2: Tweet content with any attributes
+                            r'<div class="tweet-content"[^>]*>(.*?)</div>',
+                            # Pattern 3: Timeline item with content
+                            r'<div class="timeline-item".*?<div class="tweet-content"[^>]*>(.*?)</div>'
                         ]
                         
                         matches = []
@@ -543,13 +539,36 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                             break
                             
                         content = match.group(1).strip()
-                        try:
-                            retweets = int(match.group(2))
-                            likes = int(match.group(3))
-                        except (ValueError, IndexError) as e:
-                            logger.warning(f"Failed to parse metrics: {str(e)}")
-                            retweets = 0
-                            likes = 0
+                        # Look for metrics in surrounding context
+                        context_start = max(0, match.start() - 200)
+                        context_end = min(len(response.text), match.end() + 200)
+                        context = response.text[context_start:context_end]
+                        
+                        # Try to find retweets and likes in the context
+                        retweets = 0
+                        likes = 0
+                        
+                        # Log the context for debugging
+                        logger.info("Tweet Context:")
+                        logger.info("-" * 40)
+                        logger.info(context)
+                        logger.info("-" * 40)
+                        
+                        rt_match = re.search(r'<span class="icon-retweet"></span>\s*(\d+)', context)
+                        if rt_match:
+                            try:
+                                retweets = int(rt_match.group(1))
+                                logger.info(f"Found retweets: {retweets}")
+                            except (ValueError, IndexError):
+                                pass
+                                
+                        like_match = re.search(r'<span class="icon-heart"></span>\s*(\d+)', context)
+                        if like_match:
+                            try:
+                                likes = int(like_match.group(1))
+                                logger.info(f"Found likes: {likes}")
+                            except (ValueError, IndexError):
+                                pass
                         
                         # Clean HTML tags and entities more thoroughly
                         content = re.sub(r'<[^>]+>', ' ', content)  # Replace tags with space instead of empty string

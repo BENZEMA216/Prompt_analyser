@@ -114,7 +114,13 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         "https://nitter.net",
         "https://nitter.1d4.us",
         "https://nitter.kavin.rocks",
-        "https://nitter.unixfox.eu"
+        "https://nitter.unixfox.eu",
+        "https://nitter.fdn.fr",
+        "https://nitter.cz",
+        "https://nitter.privacydev.net",
+        "https://nitter.poast.org",
+        "https://nitter.mint.lgbt",
+        "https://nitter.esmailelbob.xyz"
     ]
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
@@ -213,11 +219,12 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         logger.info(response.text[:2000])
                         logger.info("=" * 80)
                         
-                        # Try multiple tweet patterns
+                        # Try multiple tweet patterns with metrics
                         tweet_patterns = [
-                            r'<div class="tweet-content[^>]*>(.*?)</div>',
-                            r'<div class="timeline-item.*?<div class="tweet-content.*?>(.*?)</div>',
-                            r'<div class="tweet-body.*?<div class="tweet-content.*?>(.*?)</div>'
+                            r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="tweet-stat">.*?(\d+)</span>.*?<span class="tweet-stat">.*?(\d+)</span>',
+                            r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="icon-retweet"></span>\s*(\d+).*?<span class="icon-heart"></span>\s*(\d+)',
+                            r'<div class="timeline-item.*?<div class="tweet-content.*?>(.*?)</div>.*?<span class="icon-retweet"></span>\s*(\d+).*?<span class="icon-heart"></span>\s*(\d+)',
+                            r'<div class="tweet-body.*?<div class="tweet-content.*?>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="tweet-stat">.*?(\d+)</span>.*?<span class="tweet-stat">.*?(\d+)</span>'
                         ]
                         
                         matches = []

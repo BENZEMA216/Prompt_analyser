@@ -1,4 +1,4 @@
-app = "app-zbeshewo"
+app = "app-zbeshewo-divine-firefly-2718"
 primary_region = "sin"
 
 [build]
@@ -24,4 +24,4 @@ primary_region = "sin"
   PYTHONDONTWRITEBYTECODE = "1"
 
 [processes]
-  app = "uvicorn app.main:app --host 0.0.0.0 --port 8000"
+  app = "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"

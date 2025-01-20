@@ -112,15 +112,15 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
 
     # Multiple Nitter instances with fallback (expanded list for better availability)
     instances = [
-        "https://nitter.cz",
+        "https://nitter.net",
         "https://nitter.privacydev.net",
         "https://nitter.poast.org",
-        "https://nitter.bird.froth.zone",
-        "https://nitter.woodland.cafe",
+        "https://nitter.1d4.us",
+        "https://nitter.kavin.rocks",
+        "https://nitter.unixfox.eu",
         "https://nitter.rawbit.ninja",
-        "https://nitter.hostux.net",
-        "https://nitter.sneed.network",
-        "https://nitter.manasiwibi.com"
+        "https://nitter.esmailelbob.xyz",
+        "https://nitter.d420.de"
     ]
     
     # Log available instances
@@ -214,12 +214,19 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             client.headers = headers
             
             try:
-                # Use HTML search endpoint with proper parameters and headers
+                # Enhanced search parameters
+                # Enhanced search parameters with better encoding
+                encoded_query = quote_plus(query)
                 params = {
                     "f": "tweets",
-                    "q": query,
-                    "s": "recent"  # Sort by recent to ensure fresh results
+                    "q": encoded_query,
+                    "s": "recent",  # Sort by recent to ensure fresh results
+                    "e": "on",      # Extended mode
+                    "m": "live",    # Live mode for better results
+                    "l": "",        # No language restriction
+                    "src": "typed_query"  # Indicate typed query
                 }
+                logger.info(f"Search parameters: {params}")
                 url = f"{instance}/search"
                 
                 # Enhanced headers to better mimic a browser
@@ -243,11 +250,28 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     # First get the search page to establish session
                     init_response = await client.get(url, headers=headers, follow_redirects=True)
                     
-                    # Check for authentication/error pages in initial response
-                    auth_markers = ["authentication", "login", "sign in", "error", "blocked", "unavailable", "try again"]
+                    # Enhanced authentication and error page detection
+                    auth_markers = [
+                        "authentication", "login", "sign in", "error", "blocked", 
+                        "unavailable", "try again", "captcha", "verify", "too many requests",
+                        "rate limit", "maintenance", "temporarily", "unavailable"
+                    ]
                     init_response_lower = init_response.text.lower()
+                    
+                    # Check final URL after redirects
+                    final_url = str(init_response.url)
+                    if not final_url.startswith(instance):
+                        logger.warning(f"Instance {instance} redirected to {final_url}")
+                        continue
+                        
                     if any(marker in init_response_lower for marker in auth_markers):
                         logger.warning(f"Instance {instance} requires authentication or returned an error page")
+                        continue
+                        
+                    # Check response content type
+                    content_type = init_response.headers.get('content-type', '').lower()
+                    if not ('text/html' in content_type or 'application/xhtml+xml' in content_type):
+                        logger.warning(f"Instance {instance} returned unexpected content type: {content_type}")
                         continue
                         
                     if init_response.status_code == 200:
@@ -546,16 +570,16 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             
             # Try different HTML patterns that might match Nitter's structure
             tweet_patterns = [
-                # Pattern 1: Basic timeline item
-                r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>',
-                # Pattern 2: Tweet content only
-                r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>',
-                # Pattern 3: Timeline with icons
-                r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<span class="icon-retweet"></span>\s*(\d+).*?<span class="icon-heart"></span>\s*(\d+)',
-                # Pattern 4: Simplified content match
-                r'<div class="tweet-content.*?>(.*?)</div>',
-                # Pattern 5: Most basic match
-                r'<div class="timeline-item.*?>(.*?)</div>'
+                # Pattern 1: Most permissive timeline item
+                r'<div[^>]*timeline-item[^>]*>.*?<div[^>]*tweet-content[^>]*>(.*?)</div>.*?<div[^>]*tweet-stats[^>]*>.*?<span[^>]*>.*?(\d+)</span>.*?<span[^>]*>.*?(\d+)</span>',
+                # Pattern 2: Flexible tweet content with stats
+                r'<div[^>]*tweet-content[^>]*>(.*?)</div>.*?<div[^>]*tweet-stats[^>]*>.*?<span[^>]*>.*?(\d+)</span>.*?<span[^>]*>.*?(\d+)</span>',
+                # Pattern 3: Any content with icon stats
+                r'<div[^>]*>(.*?)</div>.*?<span[^>]*icon-retweet[^>]*></span>\s*(\d+).*?<span[^>]*icon-heart[^>]*></span>\s*(\d+)',
+                # Pattern 4: Basic content with any stats
+                r'<div[^>]*tweet-content[^>]*>(.*?)</div>.*?(\d+)[^<]*</span>.*?(\d+)[^<]*</span>',
+                # Pattern 5: Most basic content match
+                r'<div[^>]*tweet-content[^>]*>(.*?)</div>'
             ]
                 
             if response and response.status_code == 200:

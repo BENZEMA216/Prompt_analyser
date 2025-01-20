@@ -120,15 +120,11 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.info("Cache expired, fetching fresh results")
             del CACHE[cache_key]
 
-    # Curated list of reliable Nitter instances with rate limits
+    # Focus on most reliable Nitter instances
     instances = [
-        "https://nitter.privacydev.net",
-        "https://nitter.1d4.us",
-        "https://nitter.unixfox.eu",
-        "https://nitter.projectsegfau.lt",
-        "https://nitter.in.projectsegfau.lt",
-        "https://nitter.tux.pizza",
-        "https://nitter.salastil.com"
+        "https://nitter.net",  # Primary instance
+        "https://nitter.cz",   # Backup instance
+        "https://nitter.foss.wtf",  # Additional backup
     ]
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
@@ -138,28 +134,24 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     async def check_instance(instance: str) -> bool:
         try:
             url = f"{instance}/search?f=tweets&q=test"
-            timeout = httpx.Timeout(15.0, connect=10.0)
+            timeout = httpx.Timeout(30.0, connect=15.0)  # Increased timeouts
             headers = {
                 'User-Agent': random.choice(user_agents),
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 'Accept-Language': 'en-US,en;q=0.5',
                 'Cache-Control': 'no-cache',
                 'Connection': 'keep-alive',
-                'Upgrade-Insecure-Requests': '1'
+                'Upgrade-Insecure-Requests': '1',
+                'DNT': '1'
             }
             
-            # Add delay to avoid rate limiting
-            await asyncio.sleep(random.uniform(2.0, 5.0))
-            
-            # Configure SSL context to be more permissive
-            ssl_context = httpx.create_ssl_context()
-            ssl_context.check_hostname = False
-            ssl_context.verify_mode = ssl.CERT_NONE
+            # Shorter delay to speed up instance checks
+            await asyncio.sleep(random.uniform(1.0, 2.0))
             
             async with httpx.AsyncClient(
                 timeout=timeout,
-                limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
-                verify=False,  # Disable SSL verification
+                limits=httpx.Limits(max_keepalive_connections=10, max_connections=20),
+                verify=False,  # Allow self-signed certificates
                 headers=headers,
                 follow_redirects=True
             ) as client:
@@ -167,37 +159,47 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     response = await client.get(url)
                     logger.info(f"Response from {instance}: status={response.status_code}, url={response.url}")
                     
-                    # Handle rate limiting with exponential backoff
+                    # More forgiving status code checks
                     if response.status_code == 429:
-                        retry_after = int(response.headers.get('Retry-After', '15'))
+                        retry_after = min(int(response.headers.get('Retry-After', '5')), 10)
                         logger.warning(f"Rate limited by {instance}, waiting {retry_after}s")
                         await asyncio.sleep(retry_after)
                         return False
                     
-                    if response.status_code != 200:
+                    if response.status_code not in [200, 201, 202]:
                         logger.warning(f"Instance {instance} returned status {response.status_code}")
                         return False
-                        
-                    # Check if we're getting redirected to auth
-                    if any(marker in str(response.url).lower() for marker in ['auth', 'login', 'captcha', 'blocked']):
+                    
+                    # Less strict auth check - only look for explicit auth/login pages
+                    final_url = str(response.url).lower()
+                    if '/auth/' in final_url or '/login' in final_url:
                         logger.warning(f"Instance {instance} requires authentication")
                         return False
-                        
-                    # Log response content for debugging
-                    content_preview = response.text[:200].replace('\n', ' ')
-                    logger.info(f"Content preview from {instance}: {content_preview}...")
                     
-                    # Verify we can access tweet content
-                    if 'tweet-content' not in response.text:
-                        logger.warning(f"Instance {instance} doesn't return tweet content")
-                        return False
+                    # Simplified content verification - check for any tweet-related content
+                    html_content = response.text.lower()
+                    content_markers = [
+                        'tweet-content',
+                        'timeline-item',
+                        'tweet-body',
+                        'tweet-link',
+                        'tweet',
+                        'timeline'
+                    ]
                     
-                    tweet_count = response.text.count('tweet-content')
-                    logger.info(f"Found {tweet_count} tweet-content elements in {instance}")
+                    # Check if we got any tweet-related content
+                    for marker in content_markers:
+                        if marker in html_content:
+                            logger.info(f"Found tweet marker '{marker}' in {instance}")
+                            return True
                     
-                    if tweet_count > 0:
-                        logger.info(f"Instance {instance} is healthy with {tweet_count} tweets")
-                        return True
+                    # If we got HTML but no tweet markers, log the content for debugging
+                    if '<html' in html_content:
+                        logger.warning(f"Got HTML from {instance} but no tweet markers found")
+                        logger.debug(f"Content preview: {html_content[:500]}")
+                    else:
+                        logger.warning(f"No HTML content found in {instance} response")
+                    
                     return False
                     
                 except httpx.TimeoutException:
@@ -206,16 +208,31 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                 except httpx.ConnectError:
                     logger.warning(f"Connection error for {instance}")
                     return False
+                except Exception as e:
+                    logger.warning(f"Request failed for {instance}: {str(e)}")
+                    return False
                 
         except Exception as e:
-            logger.warning(f"Instance {instance} check failed: {str(e)}")
+            logger.warning(f"Instance check failed for {instance}: {str(e)}")
             return False
     
     # Quick parallel instance checks
     async def check_all_instances():
-        tasks = [check_instance(instance) for instance in instances]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-        return [inst for inst, result in zip(instances, results) if isinstance(result, bool) and result]
+        """Check instances sequentially with retries for better reliability."""
+        available = []
+        for instance in instances:
+            # Try each instance up to 3 times
+            for attempt in range(3):
+                try:
+                    if await check_instance(instance):
+                        available.append(instance)
+                        break
+                    await asyncio.sleep(1)  # Short delay between attempts
+                except Exception as e:
+                    logger.warning(f"Attempt {attempt + 1} failed for {instance}: {str(e)}")
+                    if attempt < 2:  # Only sleep if we're going to retry
+                        await asyncio.sleep(2 ** attempt)  # Exponential backoff
+        return available
     
     available_instances = await check_all_instances()
     if not available_instances:

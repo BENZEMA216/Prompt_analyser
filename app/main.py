@@ -16,6 +16,15 @@ app = FastAPI()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Define user agents for rotation globally
+user_agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/120.0.0.0 Safari/537.36'
+]
+
 # Cache for storing successful responses
 CACHE: Dict[str, Tuple[List[Dict[str, Any]], datetime]] = {}
 
@@ -138,33 +147,46 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     available_instances = []
     async def check_instance(instance: str) -> bool:
         try:
-            # Try both robots.txt and search page for availability check
-            check_urls = [f"{instance}/robots.txt", f"{instance}/search"]
-            timeout = httpx.Timeout(10.0, connect=5.0)  # Shorter timeout for faster checks
+            # Only check search page to reduce requests
+            url = f"{instance}/search"
+            timeout = httpx.Timeout(15.0, connect=8.0)  # Longer timeouts
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'User-Agent': random.choice(user_agents),  # Use rotating user agents
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5'
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Cache-Control': 'no-cache'
             }
             
+            # Add delay between instance checks
+            await asyncio.sleep(random.uniform(2, 5))
+            
             async with httpx.AsyncClient(timeout=timeout) as client:
-                for url in check_urls:
-                    try:
-                        response = await client.get(url, headers=headers, follow_redirects=True)
-                        if response.status_code == 200:
-                            logger.info(f"Instance {instance} is available (checked {url})")
-                            return True
-                    except Exception as e:
-                        logger.debug(f"Failed to check {url}: {str(e)}")
-                        continue
-            return False
+                try:
+                    response = await client.get(url, headers=headers, follow_redirects=True)
+                    if response.status_code == 200:
+                        logger.info(f"Instance {instance} is available")
+                        return True
+                    elif response.status_code == 429:
+                        logger.warning(f"Rate limited during instance check for {instance}")
+                        await asyncio.sleep(random.uniform(5, 10))  # Longer delay on rate limit
+                        return False
+                    else:
+                        logger.warning(f"Instance {instance} returned status {response.status_code}")
+                        return False
+                except Exception as e:
+                    logger.debug(f"Failed to check {url}: {str(e)}")
+                    return False
         except Exception as e:
             logger.warning(f"Failed to check instance {instance}: {str(e)}")
             return False
     
-    # Check all instances concurrently
-    tasks = [check_instance(instance) for instance in instances]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
+    # Check instances sequentially to avoid rate limits
+    results = []
+    for instance in instances:
+        result = await check_instance(instance)
+        results.append(result)
+        if result:  # If we found a working instance, no need to check more
+            break
     
     available_instances = [
         instance for instance, is_available in zip(instances, results)
@@ -186,14 +208,7 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     instances = available_instances
     logger.info(f"Using available instances: {instances}")
     
-    # Enhanced User-Agent rotation with modern browser versions
-    user_agents = [
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15',
-        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/120.0.0.0 Safari/537.36'
-    ]
+    # Use the globally defined user agents
     
     # Enhanced rate limit tracking with longer cache
     rate_limit_reset = {}
@@ -213,7 +228,12 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     
     async with httpx.AsyncClient(timeout=timeout, limits=limits) as client:
         response = None
+        # Add initial delay before starting requests
+        await asyncio.sleep(random.uniform(1, 3))
+        
         for instance in instances:
+            # Add delay between instance requests
+            await asyncio.sleep(random.uniform(3, 7))
             # Enhanced rate limit and failure handling
             current_time = datetime.now()
             

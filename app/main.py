@@ -11,23 +11,27 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]]:
-    """Fetch tweets from Nitter with simplified error handling and request logic."""
-    # List of Nitter instances to try
+    """Fetch tweets from Nitter with improved error handling and parallel instance checking."""
+    # Extended list of Nitter instances
     instances = [
+        "https://nitter.net",
         "https://nitter.privacydev.net",
-        "https://nitter.snopyta.org",
+        "https://nitter.cz",
+        "https://nitter.unixfox.eu",
         "https://nitter.moomoo.me",
+        "https://nitter.1d4.us",
+        "https://nitter.kavin.rocks",
         "https://nitter.weiler.rocks",
-        "https://nitter.sethforprivacy.com"
+        "https://nitter.sethforprivacy.com",
+        "https://nitter.cutelab.space"
     ]
-    instance = None  # Will be set to working instance
     tweets: List[Dict[str, Any]] = []
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
     
-    # Use more lenient timeouts
-    timeout = httpx.Timeout(30.0, connect=10.0, read=20.0)
-    limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
+    # Stricter timeouts for faster failure detection
+    timeout = httpx.Timeout(15.0, connect=5.0, read=10.0)
+    limits = httpx.Limits(max_keepalive_connections=10, max_connections=20)
     
     # Enhanced headers to look more like a real browser
     headers = {
@@ -41,75 +45,61 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     }
 
     # Simple instance check
-    async def check_instance() -> bool:
+    async def check_instance(inst: str) -> Optional[str]:
         """Quick check if instance is responding."""
         try:
-            url = f"{instance}/search?f=tweets&q=test"
-            timeout = httpx.Timeout(10.0, connect=5.0)
+            url = f"{inst}/search?f=tweets&q=test"
+            quick_timeout = httpx.Timeout(5.0, connect=2.0)
             
             async with httpx.AsyncClient(
-                timeout=timeout,
+                timeout=quick_timeout,
                 headers=headers,
-                verify=False,  # Disable SSL verification temporarily
-                follow_redirects=True,
-                http2=True
+                verify=False,
+                follow_redirects=True
             ) as client:
-                logger.info(f"Testing instance {instance}...")
+                logger.info(f"Testing instance {inst}...")
                 response = await client.get(url)
                 
+                if response.status_code == 429:
+                    logger.warning(f"Rate limited by {inst}")
+                    return None
+                    
                 if response.status_code != 200:
-                    logger.warning(f"Instance {instance} failed with status {response.status_code}")
-                    if response.status_code == 302:
-                        logger.warning(f"Redirect location: {response.headers.get('location', 'unknown')}")
-                    return False
+                    logger.warning(f"Instance {inst} failed with status {response.status_code}")
+                    return None
                 
                 if 'tweet-content' not in response.text:
-                    logger.warning(f"Instance {instance} returned no tweet content")
-                    return False
+                    logger.warning(f"Instance {inst} returned no tweet content")
+                    return None
                 
-                logger.info(f"Successfully connected to {instance}")
-                return True
-                
-        except httpx.TimeoutException as e:
-            logger.warning(f"Instance {instance} timed out: {str(e)}")
-            return False
-        except httpx.HTTPError as e:
-            logger.warning(f"Instance {instance} HTTP error: {str(e)}")
-            return False
-        except Exception as e:
-            logger.warning(f"Instance {instance} error: {str(e)}")
-            return False
+                logger.info(f"Successfully connected to {inst}")
+                return inst
                 
         except Exception as e:
-            logger.warning(f"Instance check failed: {str(e)}")
-            return False
+            logger.warning(f"Instance {inst} error: {str(e)}")
+            return None
     
-    # Quick parallel instance checks
-    async def verify_instance():
-        """Verify instance with one retry."""
-        try:
-            if await check_instance():
-                return True
-            # One retry after a short delay
-            await asyncio.sleep(1)
-            return await check_instance()
-        except Exception as e:
-            logger.warning(f"Instance verification failed: {str(e)}")
-            return False
-            
-    # Try each instance until we find one that works
-    for inst in instances:
-        instance = inst
-        logger.info(f"Trying Nitter instance: {instance}")
-        if await verify_instance():
-            logger.info(f"Successfully connected to {instance}")
-            break
-    else:
-        logger.error("All Nitter instances failed")
-        raise HTTPException(
-            status_code=503,
-            detail="Tweet search service is currently unavailable"
-        )
+    # Try instances in parallel
+    async def find_working_instance() -> str:
+        tasks = []
+        for inst in instances:
+            tasks.append(check_instance(inst))
+        
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        working_instances = [r for r in results if isinstance(r, str)]
+        
+        if not working_instances:
+            logger.error("All Nitter instances failed")
+            raise HTTPException(
+                status_code=503,
+                detail="Tweet search service is currently unavailable"
+            )
+        
+        # Return the first working instance
+        return working_instances[0]
+    
+    # Find working instance
+    instance = await find_working_instance()
         
     try:
         # Make the search request

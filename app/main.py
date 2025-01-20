@@ -93,7 +93,7 @@ def get_cache_key(query: str, max_results: int) -> str:
     """Generate a cache key from the query parameters."""
     return hashlib.md5(f"{query}:{max_results}".encode()).hexdigest()
 
-def is_cache_valid(cache_time: datetime, max_age_minutes: int = 5) -> bool:
+def is_cache_valid(cache_time: datetime, max_age_minutes: int = 15) -> bool:
     """Check if cached data is still valid."""
     return datetime.now() - cache_time < timedelta(minutes=max_age_minutes)
 
@@ -109,18 +109,11 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.info("Cache expired, fetching fresh results")
             del CACHE[cache_key]
 
-    # Multiple Nitter instances with fallback
+    # Multiple Nitter instances with fallback (reduced for faster health checks)
     instances = [
         "https://nitter.net",
         "https://nitter.1d4.us",
-        "https://nitter.kavin.rocks",
-        "https://nitter.unixfox.eu",
-        "https://nitter.fdn.fr",
-        "https://nitter.cz",
-        "https://nitter.privacydev.net",
-        "https://nitter.poast.org",
-        "https://nitter.mint.lgbt",
-        "https://nitter.esmailelbob.xyz"
+        "https://nitter.kavin.rocks"
     ]
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
@@ -133,7 +126,17 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             health_check_url = f"{instance}/robots.txt"
             logger.info(f"Checking availability of {instance}")
             async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.get(health_check_url, follow_redirects=True)
+                try:
+                    response = await client.get(health_check_url, follow_redirects=True, headers={
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    })
+                    logger.info(f"Health check response from {instance}: {response.status_code}")
+                except httpx.TimeoutException:
+                    logger.warning(f"Health check timeout for {instance} after 10 seconds")
+                    continue
+                except httpx.HTTPError as e:
+                    logger.warning(f"HTTP error during health check for {instance}: {str(e)}")
+                    continue
                 logger.info(f"Health check response from {instance}: {response.status_code}")
                 
                 if response.status_code == 200:
@@ -355,8 +358,7 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                             logger.info(f"Successfully extracted tweet: {content[:100]}...")
                             found_tweets = True
                             
-                            if found_tweets:
-                                break
+                            # Don't break here, collect all available tweets up to max_results
                                 
                         if not found_tweets:
                             logger.warning(f"No tweets found in response from {instance}")

@@ -10,6 +10,7 @@ from functools import lru_cache
 import hashlib
 from xml.etree import ElementTree as ET
 from io import StringIO
+from urllib.parse import urlencode, quote_plus
 
 app = FastAPI()
 logging.basicConfig(level=logging.INFO)
@@ -125,7 +126,8 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         try:
             health_check_url = f"{instance}/robots.txt"
             logger.info(f"Checking availability of {instance}")
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(30.0, connect=10.0, read=20.0)) as client:
+                logger.info(f"Starting health check for {instance} with increased timeout")
                 try:
                     response = await client.get(health_check_url, follow_redirects=True, headers={
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -222,12 +224,12 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     'Pragma': 'no-cache'
                 }
                 
-                # Properly encode query parameters
-                encoded_params = httpx.QueryParams(params).encode()
-                full_url = f"{url}?{encoded_params}"
-                logger.info(f"Trying HTML search from {full_url} with headers: {headers}")
-                
+                # Properly encode query parameters using urllib.parse
                 try:
+                    encoded_params = urlencode(params, quote_via=quote_plus)
+                    full_url = f"{url}?{encoded_params}"
+                    logger.info(f"Trying HTML search from {full_url} with headers: {headers}")
+                    
                     # First get the search page to establish session
                     init_response = await client.get(url, headers=headers, follow_redirects=True)
                     if init_response.status_code == 200:
@@ -256,7 +258,7 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                                         headers=search_headers,
                                         cookies=init_response.cookies,
                                         follow_redirects=True,
-                                        timeout=10.0
+                                        timeout=httpx.Timeout(30.0, connect=10.0, read=20.0)
                                     )
                                 else:
                                     response = await client.post(

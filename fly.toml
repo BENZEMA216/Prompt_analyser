@@ -10,7 +10,6 @@ primary_region = "sin"
   auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 1
-  processes = ["app"]
 
 [[vm]]
   memory = "256mb"
@@ -23,5 +22,8 @@ primary_region = "sin"
   PYTHONUNBUFFERED = "1"
   PYTHONDONTWRITEBYTECODE = "1"
 
+[deploy]
+  strategy = "immediate"
+
 [processes]
-  app = "/usr/local/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000"
+  web = "/usr/local/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"

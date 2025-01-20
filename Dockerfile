@@ -1,15 +1,10 @@
 FROM python:3.10.12-slim
 
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PATH="/usr/local/bin:$PATH" \
-    PORT=8000
-
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir uvicorn && \
+    pip install --no-cache-dir "uvicorn[standard]" && \
     rm -rf /root/.cache/pip/* && \
     rm -rf /root/.cache && \
     find /usr/local -type d -name "__pycache__" -exec rm -rf {} + && \
@@ -19,6 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 
 COPY app app/
 
+ENV PORT=8000 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
 EXPOSE 8000
 
-CMD ["/usr/local/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["/usr/local/bin/python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

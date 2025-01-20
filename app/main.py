@@ -94,8 +94,8 @@ def get_cache_key(query: str, max_results: int) -> str:
     """Generate a cache key from the query parameters."""
     return hashlib.md5(f"{query}:{max_results}".encode()).hexdigest()
 
-def is_cache_valid(cache_time: datetime, max_age_minutes: int = 15) -> bool:
-    """Check if cached data is still valid."""
+def is_cache_valid(cache_time: datetime, max_age_minutes: int = 30) -> bool:
+    """Check if cached data is still valid with longer cache time."""
     return datetime.now() - cache_time < timedelta(minutes=max_age_minutes)
 
 async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]]:
@@ -188,26 +188,40 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15'
     ]
     
-    # Rate limit tracking
+    # Enhanced rate limit tracking with longer cache
     rate_limit_reset = {}
-    for instance in instances:
-        if instance not in rate_limit_reset:
-            rate_limit_reset[instance] = datetime.now()
+    instance_failures = {}  # Track consecutive failures per instance
     
     # Validate and encode query
     if not query:
         raise HTTPException(status_code=400, detail="Query parameter is required")
     tweets = []
-    timeout = httpx.Timeout(15.0, connect=5.0, read=10.0)
-    limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
+    
+    # Longer timeouts and more connections for reliability
+    timeout = httpx.Timeout(30.0, connect=10.0, read=20.0)
+    limits = httpx.Limits(max_keepalive_connections=10, max_connections=20)
+    
+    # Shuffle instances for better load distribution
+    random.shuffle(instances)
     
     async with httpx.AsyncClient(timeout=timeout, limits=limits) as client:
         response = None
         for instance in instances:
-            # Check rate limit
-            if datetime.now() < rate_limit_reset.get(instance, datetime.now()):
+            # Enhanced rate limit and failure handling
+            current_time = datetime.now()
+            
+            # Skip if rate limited
+            if current_time < rate_limit_reset.get(instance, current_time):
                 logger.warning(f"Rate limit in effect for {instance}, skipping...")
                 continue
+                
+            # Skip if too many recent failures
+            failure_count = instance_failures.get(instance, 0)
+            if failure_count > 3:
+                backoff_time = min(2 ** failure_count, 300)  # Cap at 5 minutes
+                logger.warning(f"Instance {instance} has failed {failure_count} times, backing off for {backoff_time}s")
+                await asyncio.sleep(backoff_time)
+                instance_failures[instance] = max(0, failure_count - 1)  # Reduce failure count after backoff
                 
             # Rotate User-Agent
             headers = {'User-Agent': random.choice(user_agents)}
@@ -502,10 +516,12 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     
                     if response.status_code == 429:
                         # Update rate limit reset time
-                        retry_after = int(response.headers.get('retry-after', 60))
+                        retry_after = min(int(response.headers.get('retry-after', 60)), 120)  # Cap at 2 minutes
                         rate_limit_reset[instance] = datetime.now() + timedelta(seconds=retry_after)
-                        logger.warning(f"Rate limited on {instance}, will retry after {retry_after}s")
-                        continue
+                        instance_failures[instance] = instance_failures.get(instance, 0) + 1
+                        logger.warning(f"Rate limited on {instance}, will retry after {retry_after}s (failure count: {instance_failures[instance]})")
+                        # Try next instance instead of continuing
+                        break
                         
                     if response.status_code == 200:
                         try:

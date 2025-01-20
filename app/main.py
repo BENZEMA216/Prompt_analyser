@@ -110,53 +110,58 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.info("Cache expired, fetching fresh results")
             del CACHE[cache_key]
 
-    # Multiple Nitter instances with fallback (reduced for faster health checks)
+    # Multiple Nitter instances with fallback (expanded list for better availability)
     instances = [
         "https://nitter.net",
         "https://nitter.1d4.us",
-        "https://nitter.kavin.rocks"
+        "https://nitter.kavin.rocks",
+        "https://nitter.unixfox.eu",
+        "https://nitter.moomoo.me",
+        "https://nitter.privacydev.net",
+        "https://nitter.projectsegfau.lt"
     ]
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
     logger.info(f"Available Nitter instances: {instances}")
 
-    # Verify instance availability before using
+    # Verify instance availability with more lenient checks
     available_instances = []
-    for instance in instances:
+    async def check_instance(instance: str) -> bool:
         try:
-            health_check_url = f"{instance}/robots.txt"
-            logger.info(f"Checking availability of {instance}")
-            async with httpx.AsyncClient(timeout=httpx.Timeout(30.0, connect=10.0, read=20.0)) as client:
-                logger.info(f"Starting health check for {instance} with increased timeout")
-                try:
-                    response = await client.get(health_check_url, follow_redirects=True, headers={
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-                    })
-                    logger.info(f"Health check response from {instance}: {response.status_code}")
-                except httpx.TimeoutException:
-                    logger.warning(f"Health check timeout for {instance} after 10 seconds")
-                    continue
-                except httpx.HTTPError as e:
-                    logger.warning(f"HTTP error during health check for {instance}: {str(e)}")
-                    continue
-                logger.info(f"Health check response from {instance}: {response.status_code}")
-                
-                if response.status_code == 200:
-                    available_instances.append(instance)
-                    logger.info(f"Instance {instance} is available")
-                else:
-                    logger.warning(f"Instance {instance} returned status {response.status_code}")
-                    if 'location' in response.headers:
-                        logger.warning(f"Redirect location: {response.headers['location']}")
-        except httpx.TimeoutException:
-            logger.warning(f"Instance {instance} timed out during health check")
-            continue
-        except httpx.HTTPError as e:
-            logger.warning(f"HTTP error checking {instance}: {str(e)}")
-            continue
+            # Try both robots.txt and search page for availability check
+            check_urls = [f"{instance}/robots.txt", f"{instance}/search"]
+            timeout = httpx.Timeout(10.0, connect=5.0)  # Shorter timeout for faster checks
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5'
+            }
+            
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                for url in check_urls:
+                    try:
+                        response = await client.get(url, headers=headers, follow_redirects=True)
+                        if response.status_code == 200:
+                            logger.info(f"Instance {instance} is available (checked {url})")
+                            return True
+                    except Exception as e:
+                        logger.debug(f"Failed to check {url}: {str(e)}")
+                        continue
+            return False
         except Exception as e:
-            logger.warning(f"Instance {instance} is not available: {str(e)}")
-            continue
+            logger.warning(f"Failed to check instance {instance}: {str(e)}")
+            return False
+    
+    # Check all instances concurrently
+    tasks = [check_instance(instance) for instance in instances]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    
+    available_instances = [
+        instance for instance, is_available in zip(instances, results)
+        if isinstance(is_available, bool) and is_available
+    ]
+    
+    logger.info(f"Found {len(available_instances)} available instances: {available_instances}")
             
     logger.info(f"Available instances after health check: {available_instances}")
 
@@ -510,23 +515,25 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                 logger.error(f"Unexpected error with {instance}: {str(e)}")
                 continue
                 
-        if not response or response.status_code != 200:
-            raise HTTPException(
-                status_code=503,
-                detail="Failed to fetch tweets from all available instances"
-            )
+        # Only raise 503 if we've tried all instances and none worked
+        if not tweets:
+            logger.warning("No tweets found from any instance, trying alternative patterns")
             
-            # Log the first part of the response for debugging
-            logger.info(f"Response preview: {response.text[:1000]}")
-            
-            if response and response.status_code == 200:
-                # Try different HTML patterns that might match Nitter's structure
-                tweet_patterns = [
-                    r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>',
-                    r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>',
-                    r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<span class="icon-retweet"></span>\s*(\d+).*?<span class="icon-heart"></span>\s*(\d+)'
-                ]
+            # Try different HTML patterns that might match Nitter's structure
+            tweet_patterns = [
+                # Pattern 1: Basic timeline item
+                r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>',
+                # Pattern 2: Tweet content only
+                r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>',
+                # Pattern 3: Timeline with icons
+                r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<span class="icon-retweet"></span>\s*(\d+).*?<span class="icon-heart"></span>\s*(\d+)',
+                # Pattern 4: Simplified content match
+                r'<div class="tweet-content.*?>(.*?)</div>',
+                # Pattern 5: Most basic match
+                r'<div class="timeline-item.*?>(.*?)</div>'
+            ]
                 
+            if response and response.status_code == 200:
                 found_tweets = False
                 for pattern in tweet_patterns:
                     matches = re.finditer(pattern, response.text, re.DOTALL)
@@ -564,7 +571,7 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         break
                         
                 # Add debug logging
-                if not found_tweets:
+                if not found_tweets and response and response.status_code == 200:
                     logger.error(f"No tweets found in response. Response preview: {response.text[:500]}")
                 
                 if found_tweets:
@@ -574,32 +581,38 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     
                 logger.warning(f"No tweets found in response from {instance}")
                 
-        # If we get here, no tweets were found from any instance
-        raise HTTPException(
-            status_code=503,
-            detail="No tweets found from any available instance"
-        )
+        # If we get here and still have no tweets, return an empty list instead of error
+        if not tweets:
+            logger.warning("No tweets found from any instance after trying all patterns")
+            return []
+        return tweets
 
 @app.get("/search")
 async def search_tweets(query: str, max_results: int = 10) -> Dict[str, Any]:
     try:
         tweets = await fetch_tweets(query, max_results)
         logger.info(f"Successfully fetched {len(tweets)} tweets for query: {query}")
+        
+        # Return success even with empty results, just indicate no tweets found
+        status = "success" if tweets else "no_results"
+        message = f"Found {len(tweets)} tweets" if tweets else "No tweets found for the given query"
+        
         return {
-            "status": "success",
+            "status": status,
+            "message": message,
             "results": tweets,
             "query": query,
             "count": len(tweets)
         }
-    except HTTPException as e:
-        logger.error(f"HTTP error during tweet search: {str(e)}")
-        raise
     except Exception as e:
         logger.error(f"Unexpected error during tweet search: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Internal server error: {str(e)}"
-        )
+        return {
+            "status": "error",
+            "message": "Failed to fetch tweets, please try again later",
+            "results": [],
+            "query": query,
+            "count": 0
+        }
 
 @app.get("/health")
 async def health_check():

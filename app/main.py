@@ -94,11 +94,8 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     # Multiple Nitter instances with fallback
     instances = [
         "https://nitter.privacytools.io",
-        "https://nitter.1d4.us",
         "https://nitter.kavin.rocks",
-        "https://nitter.unixfox.eu",
-        "https://nitter.poast.org",
-        "https://nitter.bird.froth.zone"
+        "https://nitter.net"
     ]
 
     # Verify instance availability before using
@@ -171,45 +168,49 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         logger.info(f"Successfully connected to search endpoint at {full_url}")
                         logger.debug(f"Response headers: {dict(response.headers)}")
                         
-                        # Try different HTML patterns that might match Nitter's structure
-                        tweet_patterns = [
-                            r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>',
-                            r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>',
-                            r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<span class="icon-retweet"></span>\s*(\d+).*?<span class="icon-heart"></span>\s*(\d+)'
-                        ]
-                        
+                        # Simplified tweet pattern focusing on content and basic metrics
+                        tweet_pattern = r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats">(.*?)</div>'
+                        matches = re.finditer(tweet_pattern, response.text, re.DOTALL)
                         found_tweets = False
-                        for pattern in tweet_patterns:
-                            matches = re.finditer(pattern, response.text, re.DOTALL)
-                            for match in matches:
-                                if len(tweets) >= max_results:
-                                    found_tweets = True
-                                    break
-                                    
-                                content = match.group(1).strip()
-                                try:
-                                    retweets = int(match.group(2))
-                                    likes = int(match.group(3))
-                                except (ValueError, IndexError) as e:
-                                    logger.warning(f"Failed to parse metrics: {str(e)}")
-                                    retweets = 0
-                                    likes = 0
+                        
+                        for match in matches:
+                            if len(tweets) >= max_results:
+                                found_tweets = True
+                                break
                                 
-                                # Clean HTML tags and entities
-                                content = re.sub(r'<[^>]+>', ' ', content)
-                                content = re.sub(r'\s+', ' ', content)
-                                content = content.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"').replace("&#39;", "'")
-                                content = content.strip()
+                            raw_content = match.group(1).strip()
+                            stats_html = match.group(2)
+                            
+                            # Clean HTML tags and entities
+                            content = re.sub(r'<[^>]+>', ' ', raw_content)  # Replace tags with space
+                            content = re.sub(r'\s+', ' ', content)  # Normalize whitespace
+                            content = content.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"').replace("&#39;", "'")
+                            content = content.strip()
+                            
+                            if not content:  # Skip if content is empty after cleaning
+                                continue
+                            
+                            # Extract metrics from stats HTML
+                            retweets = 0
+                            likes = 0
+                            
+                            rt_match = re.search(r'(\d+)\s*Retweets?', stats_html)
+                            if rt_match:
+                                retweets = int(rt_match.group(1))
                                 
-                                if content:
-                                    tweets.append({
-                                        "content": content,
-                                        "metrics": {
-                                            "retweets": retweets,
-                                            "likes": likes
-                                        }
-                                    })
-                                    logger.info(f"Extracted tweet: {content[:100]}...")
+                            like_match = re.search(r'(\d+)\s*Likes?', stats_html)
+                            if like_match:
+                                likes = int(like_match.group(1))
+                            
+                            tweets.append({
+                                "content": content,
+                                "metrics": {
+                                    "retweets": retweets,
+                                    "likes": likes
+                                }
+                            })
+                            logger.info(f"Extracted tweet: {content[:100]}...")
+                            found_tweets = True
                             
                             if found_tweets:
                                 break

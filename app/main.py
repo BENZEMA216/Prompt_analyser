@@ -112,14 +112,19 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
 
     # Multiple Nitter instances with fallback (expanded list for better availability)
     instances = [
-        "https://nitter.net",
-        "https://nitter.1d4.us",
-        "https://nitter.kavin.rocks",
-        "https://nitter.unixfox.eu",
-        "https://nitter.moomoo.me",
+        "https://nitter.cz",
         "https://nitter.privacydev.net",
-        "https://nitter.projectsegfau.lt"
+        "https://nitter.poast.org",
+        "https://nitter.bird.froth.zone",
+        "https://nitter.woodland.cafe",
+        "https://nitter.rawbit.ninja",
+        "https://nitter.hostux.net",
+        "https://nitter.sneed.network",
+        "https://nitter.manasiwibi.com"
     ]
+    
+    # Log available instances
+    logger.info(f"Starting tweet search with {len(instances)} instances")
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
     logger.info(f"Available Nitter instances: {instances}")
@@ -233,10 +238,18 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                 try:
                     encoded_params = urlencode(params, quote_via=quote_plus)
                     full_url = f"{url}?{encoded_params}"
-                    logger.info(f"Trying HTML search from {full_url} with headers: {headers}")
+                    logger.info(f"Trying HTML search from {full_url}")
                     
                     # First get the search page to establish session
                     init_response = await client.get(url, headers=headers, follow_redirects=True)
+                    
+                    # Check for authentication/error pages in initial response
+                    auth_markers = ["authentication", "login", "sign in", "error", "blocked", "unavailable", "try again"]
+                    init_response_lower = init_response.text.lower()
+                    if any(marker in init_response_lower for marker in auth_markers):
+                        logger.warning(f"Instance {instance} requires authentication or returned an error page")
+                        continue
+                        
                     if init_response.status_code == 200:
                         # Extract any potential CSRF token or session data from the search form
                         search_html = init_response.text
@@ -288,18 +301,34 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         # Log the HTML structure we're trying to parse
                         logger.info("HTML Structure Preview:")
                         logger.info("=" * 80)
+                        logger.info(f"Response from {instance}:")
+                        logger.info(f"Status code: {response.status_code}")
+                        logger.info(f"Content type: {response.headers.get('content-type', 'unknown')}")
+                        logger.info(f"Content length: {len(response.text)} bytes")
+                        logger.info("-" * 40)
+                        logger.info("First 2000 characters of response:")
                         logger.info(response.text[:2000])
+                        logger.info("-" * 40)
+                        logger.info("Looking for tweet-content divs...")
+                        tweet_divs = re.findall(r'<div class="tweet-content[^>]*>.*?</div>', response.text, re.DOTALL)
+                        logger.info(f"Found {len(tweet_divs)} potential tweet divs")
+                        if tweet_divs:
+                            logger.info("First tweet div found:")
+                            logger.info(tweet_divs[0][:200])
                         logger.info("=" * 80)
                         
                         # Try multiple tweet patterns with metrics
                         tweet_patterns = [
-                            # Pattern 1: Basic tweet content
-                            r'<div class="tweet-content">(.*?)</div>',
-                            # Pattern 2: Tweet content with any attributes
-                            r'<div class="tweet-content"[^>]*>(.*?)</div>',
-                            # Pattern 3: Timeline item with content
-                            r'<div class="timeline-item".*?<div class="tweet-content"[^>]*>(.*?)</div>'
+                            # Pattern 1: Basic tweet content with metrics
+                            r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="tweet-stat">.*?(\d+)</span>.*?<span class="tweet-stat">.*?(\d+)</span>',
+                            # Pattern 2: Timeline item with content and metrics
+                            r'<div class="timeline-item".*?<div class="tweet-content"[^>]*>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="tweet-stat">.*?(\d+)</span>.*?<span class="tweet-stat">.*?(\d+)</span>',
+                            # Pattern 3: Simpler tweet content pattern as fallback
+                            r'<div class="tweet-content"[^>]*>(.*?)</div>'
                         ]
+                        
+                        # Log which patterns we're trying
+                        logger.info("Attempting to match tweets with multiple patterns")
                         
                         matches = []
                         for pattern in tweet_patterns:

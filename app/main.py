@@ -369,11 +369,12 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         
                     if response.status_code == 200:
                         try:
-                            # Use a simpler tweet pattern focused on HTML structure
-                            tweet_pattern = r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>'
+                            # Updated pattern based on actual Nitter HTML structure
+                            tweet_pattern = r'<div class="timeline-item.*?<div class="tweet-content.*?>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="icon-retweet"></span>\s*(\d+).*?<span class="icon-heart"></span>\s*(\d+)'
                             
                             matches = list(re.finditer(tweet_pattern, response.text, re.DOTALL))
-                            logger.info(f"Found {len(matches)} potential tweets")
+                            logger.info(f"Found {len(matches)} potential tweets in HTML response")
+                            logger.debug(f"HTML content snippet: {response.text[:500]}...")
                             
                             for match in matches:
                                 if len(tweets) >= max_results:

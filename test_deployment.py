@@ -8,7 +8,7 @@ async def test_endpoint(url: str, params: Dict[str, Any] = {}) -> Dict[str, Any]
     if params:
         print(f"With params: {params}")
     
-    timeout = httpx.Timeout(30.0, connect=10.0)
+    timeout = httpx.Timeout(10.0, connect=5.0)
     try:
         async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
             try:

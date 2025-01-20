@@ -221,10 +221,16 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         
                         # Try multiple tweet patterns with metrics
                         tweet_patterns = [
-                            r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="tweet-stat">.*?(\d+)</span>.*?<span class="tweet-stat">.*?(\d+)</span>',
-                            r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="icon-retweet"></span>\s*(\d+).*?<span class="icon-heart"></span>\s*(\d+)',
-                            r'<div class="timeline-item.*?<div class="tweet-content.*?>(.*?)</div>.*?<span class="icon-retweet"></span>\s*(\d+).*?<span class="icon-heart"></span>\s*(\d+)',
-                            r'<div class="tweet-body.*?<div class="tweet-content.*?>(.*?)</div>.*?<div class="tweet-stats">.*?<span class="tweet-stat">.*?(\d+)</span>.*?<span class="tweet-stat">.*?(\d+)</span>'
+                            # Pattern 1: Basic timeline item with tweet stats
+                            r'<div class="timeline-item[^>]*>.*?<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats">[^<]*<span[^>]*>(\d+)</span>[^<]*<span[^>]*>(\d+)</span>',
+                            # Pattern 2: Tweet content with icon-based stats
+                            r'<div class="tweet-content[^>]*>(.*?)</div>.*?<span class="icon-retweet"></span>\s*<span[^>]*>(\d+)</span>.*?<span class="icon-heart"></span>\s*<span[^>]*>(\d+)</span>',
+                            # Pattern 3: Timeline item with icon-based stats
+                            r'<div class="timeline-item.*?<div class="tweet-content.*?>(.*?)</div>.*?<span class="icon-retweet"></span>\s*<span[^>]*>(\d+)</span>.*?<span class="icon-heart"></span>\s*<span[^>]*>(\d+)</span>',
+                            # Pattern 4: Tweet body with generic stats
+                            r'<div class="tweet-body.*?<div class="tweet-content.*?>(.*?)</div>.*?<div class="tweet-stats">[^<]*<span[^>]*>(\d+)</span>[^<]*<span[^>]*>(\d+)</span>',
+                            # Pattern 5: Timeline item with media content
+                            r'<div class="timeline-item[^>]*>.*?<div class="tweet-content media-body[^>]*>(.*?)</div>.*?<div class="tweet-stats">[^<]*<span[^>]*>(\d+)</span>[^<]*<span[^>]*>(\d+)</span>'
                         ]
                         
                         matches = []

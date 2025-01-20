@@ -12,7 +12,15 @@ logger = logging.getLogger(__name__)
 
 async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]]:
     """Fetch tweets from Nitter with simplified error handling and request logic."""
-    instance = "https://nitter.net"
+    # List of Nitter instances to try
+    instances = [
+        "https://nitter.privacydev.net",
+        "https://nitter.snopyta.org",
+        "https://nitter.moomoo.me",
+        "https://nitter.weiler.rocks",
+        "https://nitter.sethforprivacy.com"
+    ]
+    instance = None  # Will be set to working instance
     tweets: List[Dict[str, Any]] = []
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
@@ -33,10 +41,15 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         """Quick check if instance is responding."""
         try:
             url = f"{instance}/search?f=tweets&q=test"
-            timeout = httpx.Timeout(3.0, connect=1.0)
+            timeout = httpx.Timeout(5.0, connect=3.0)
             
-            async with httpx.AsyncClient(timeout=timeout, headers=headers) as client:
-                response = await client.get(url, follow_redirects=True)
+            async with httpx.AsyncClient(
+                timeout=timeout,
+                headers=headers,
+                verify=False,  # Disable SSL verification temporarily
+                follow_redirects=True
+            ) as client:
+                response = await client.get(url)
                 
                 if response.status_code != 200:
                     logger.warning(f"Instance check failed with status {response.status_code}")
@@ -46,6 +59,7 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     logger.warning("No tweet content found in response")
                     return False
                 
+                logger.info(f"Successfully connected to {instance}")
                 return True
                 
         except Exception as e:
@@ -65,8 +79,15 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.warning(f"Instance verification failed: {str(e)}")
             return False
             
-    # Verify instance availability
-    if not await verify_instance():
+    # Try each instance until we find one that works
+    for inst in instances:
+        instance = inst
+        logger.info(f"Trying Nitter instance: {instance}")
+        if await verify_instance():
+            logger.info(f"Successfully connected to {instance}")
+            break
+    else:
+        logger.error("All Nitter instances failed")
         raise HTTPException(
             status_code=503,
             detail="Tweet search service is currently unavailable"

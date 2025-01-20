@@ -213,12 +213,25 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         logger.info(response.text[:2000])
                         logger.info("=" * 80)
                         
-                        # Simplified tweet pattern focusing on content only first
-                        tweet_pattern = r'<div class="tweet-content[^>]*>(.*?)</div>'
-                        matches = list(re.finditer(tweet_pattern, response.text, re.DOTALL))
-                        found_tweets = False
+                        # Try multiple tweet patterns
+                        tweet_patterns = [
+                            r'<div class="tweet-content[^>]*>(.*?)</div>',
+                            r'<div class="timeline-item.*?<div class="tweet-content.*?>(.*?)</div>',
+                            r'<div class="tweet-body.*?<div class="tweet-content.*?>(.*?)</div>'
+                        ]
                         
-                        logger.info(f"Found {len(matches)} potential tweets using pattern")
+                        matches = []
+                        for pattern in tweet_patterns:
+                            logger.info(f"Trying pattern: {pattern}")
+                            current_matches = list(re.finditer(pattern, response.text, re.DOTALL))
+                            if current_matches:
+                                logger.info(f"Found {len(current_matches)} matches with pattern")
+                                matches.extend(current_matches)
+                                break
+                            else:
+                                logger.warning(f"No matches found with pattern")
+                        
+                        found_tweets = False
                         
                         for match in matches:
                             if len(tweets) >= max_results:
@@ -226,12 +239,21 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                                 logger.info(f"Reached max_results limit of {max_results}")
                                 break
                                 
-                            raw_content = match.group(1).strip()
-                            logger.info(f"Raw tweet content found: {raw_content[:200]}")
-                            
-                            # Validate content before processing
-                            if not raw_content or len(raw_content) < 5:
-                                logger.warning("Skipping too short content")
+                            try:
+                                raw_content = match.group(1).strip()
+                                logger.info(f"Raw tweet content found: {raw_content[:200]}")
+                                
+                                # Look for specific HTML markers that indicate this isn't a real tweet
+                                if any(marker in raw_content.lower() for marker in ['no results', 'try again', 'error']):
+                                    logger.warning("Skipping content that appears to be an error message")
+                                    continue
+                                    
+                                # Validate content before processing
+                                if not raw_content or len(raw_content) < 5:
+                                    logger.warning("Skipping too short content")
+                                    continue
+                            except Exception as e:
+                                logger.error(f"Error extracting content from match: {str(e)}")
                                 continue
                             
                             # More thorough content cleaning

@@ -202,16 +202,42 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             client.headers = headers
             
             try:
-                # Use HTML search endpoint
-                params = {"f": "tweets", "q": query}
+                # Use HTML search endpoint with proper parameters and headers
+                params = {
+                    "f": "tweets",
+                    "q": query,
+                    "s": "recent"  # Sort by recent to ensure fresh results
+                }
                 url = f"{instance}/search"
                 
-                # Construct URL with proper query parameters
-                full_url = url + "?" + str(httpx.QueryParams(params))
-                logger.info(f"Trying HTML search from {full_url}")
+                # Enhanced headers to better mimic a browser
+                headers = {
+                    'User-Agent': random.choice(user_agents),
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.5',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'Connection': 'keep-alive',
+                    'Upgrade-Insecure-Requests': '1',
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+                
+                # Properly encode query parameters
+                encoded_params = httpx.QueryParams(params).encode()
+                full_url = f"{url}?{encoded_params}"
+                logger.info(f"Trying HTML search from {full_url} with headers: {headers}")
                 
                 try:
-                    response = await retry_get(client, full_url)
+                    # First get the search page to establish session
+                    init_response = await client.get(url, headers=headers, follow_redirects=True)
+                    if init_response.status_code == 200:
+                        # Now perform the actual search
+                        response = await client.get(
+                            full_url,
+                            headers=headers,
+                            cookies=init_response.cookies,
+                            follow_redirects=True
+                        )
                     if response and response.status_code == 200:
                         logger.info(f"Successfully connected to search endpoint at {full_url}")
                         logger.debug(f"Response headers: {dict(response.headers)}")
@@ -239,13 +265,20 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         matches = []
                         for pattern in tweet_patterns:
                             logger.info(f"Trying pattern: {pattern}")
-                            current_matches = list(re.finditer(pattern, response.text, re.DOTALL))
+                            current_matches = list(re.finditer(pattern, response.text, re.DOTALL | re.IGNORECASE))
                             if current_matches:
                                 logger.info(f"Found {len(current_matches)} matches with pattern")
                                 matches.extend(current_matches)
-                                break
+                                # Don't break here - try all patterns to find as many tweets as possible
                             else:
                                 logger.warning(f"No matches found with pattern")
+                                
+                        # Log HTML structure if no matches found with any pattern
+                        if not matches:
+                            logger.error("No matches found with any pattern. HTML structure:")
+                            logger.error("=" * 80)
+                            logger.error(response.text[:2000])
+                            logger.error("=" * 80)
                         
                         found_tweets = False
                         

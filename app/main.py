@@ -585,10 +585,12 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                             if not matches:
                                 logger.warning(f"No tweets found in response from {instance}")
                                 logger.info("HTML Structure Analysis:")
-                                logger.info(f"- timeline-items: {len(re.findall(r'<div class="timeline-item"', response.text))}")
-                                logger.info(f"- tweet-content divs: {len(re.findall(r'<div class="tweet-content"', response.text))}")
-                                logger.info(f"First 1000 chars of response:")
-                                logger.info(response.text[:1000])
+                                timeline_pattern = r'<div class="timeline-item"[^>]*>'
+                                content_pattern = r'<div class="tweet-content"[^>]*>'
+                                logger.info(f"- timeline-items: {len(re.findall(timeline_pattern, response.text))}")
+                                logger.info(f"- tweet-content divs: {len(re.findall(content_pattern, response.text))}")
+                                logger.info("First 1000 chars of response:")
+                                logger.info(response.text[:1000] if response.text else "Empty response")
                                 continue  # Try next instance
                                 
                             logger.info(f"Found {len(matches)} tweets")

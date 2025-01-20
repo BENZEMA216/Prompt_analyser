@@ -231,13 +231,49 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     # First get the search page to establish session
                     init_response = await client.get(url, headers=headers, follow_redirects=True)
                     if init_response.status_code == 200:
-                        # Now perform the actual search
-                        response = await client.get(
-                            full_url,
-                            headers=headers,
-                            cookies=init_response.cookies,
-                            follow_redirects=True
-                        )
+                        # Extract any potential CSRF token or session data from the search form
+                        search_html = init_response.text
+                        logger.info(f"Initial search page response length: {len(search_html)}")
+                        
+                        # Now perform the actual search with additional headers
+                        search_headers = headers.copy()
+                        search_headers.update({
+                            'Referer': url,
+                            'Origin': instance,
+                            'DNT': '1',
+                            'Sec-Fetch-Dest': 'document',
+                            'Sec-Fetch-Mode': 'navigate',
+                            'Sec-Fetch-Site': 'same-origin',
+                            'Sec-Fetch-User': '?1'
+                        })
+                        
+                        # Try both GET and POST methods
+                        for method in ['GET', 'POST']:
+                            try:
+                                if method == 'GET':
+                                    response = await client.get(
+                                        full_url,
+                                        headers=search_headers,
+                                        cookies=init_response.cookies,
+                                        follow_redirects=True,
+                                        timeout=10.0
+                                    )
+                                else:
+                                    response = await client.post(
+                                        url,
+                                        headers=search_headers,
+                                        cookies=init_response.cookies,
+                                        data=params,
+                                        follow_redirects=True,
+                                        timeout=10.0
+                                    )
+                                
+                                if response.status_code == 200 and 'tweet-content' in response.text:
+                                    logger.info(f"Successfully got tweets using {method} method")
+                                    break
+                            except Exception as e:
+                                logger.warning(f"Failed with {method} method: {str(e)}")
+                                continue
                     if response and response.status_code == 200:
                         logger.info(f"Successfully connected to search endpoint at {full_url}")
                         logger.debug(f"Response headers: {dict(response.headers)}")

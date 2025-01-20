@@ -369,71 +369,48 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         
                     if response.status_code == 200:
                         try:
-                            # Parse XML response
-                            tree = ET.parse(StringIO(response.text))
-                            root = tree.getroot()
+                            # Use a simpler tweet pattern focused on HTML structure
+                            tweet_pattern = r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>.*?<span class="tweet-stat[^>]*>.*?(\d+)</span>'
                             
-                            # Extract tweets from RSS items
-                            for item in root.findall('.//item'):
+                            matches = list(re.finditer(tweet_pattern, response.text, re.DOTALL))
+                            logger.info(f"Found {len(matches)} potential tweets")
+                            
+                            for match in matches:
                                 if len(tweets) >= max_results:
                                     break
                                     
-                                # Get tweet content (remove HTML tags)
-                                description_elem = item.find('description')
-                                if description_elem is None or description_elem.text is None:
-                                    logger.warning("Skipping item: missing description")
-                                    continue
+                                try:
+                                    content = match.group(1).strip()
+                                    retweets = int(match.group(2))
+                                    likes = int(match.group(3))
                                     
-                                content: str = description_elem.text
-                                content = re.sub(r'<[^>]+>', '', content)
-                                content = content.strip()
-                                
-                                # Get metrics from title (usually contains retweet/like counts)
-                                title_elem = item.find('title')
-                                title: str = title_elem.text if title_elem is not None and title_elem.text is not None else ""
-                                
-                                # Try different metric patterns
-                                metric_patterns = [
-                                    r'(\d+)\s*RTs?,\s*(\d+)\s*likes?',
-                                    r'(\d+)\s*Retweets?,\s*(\d+)\s*Likes?',
-                                    r'RT:(\d+)\s*Like:(\d+)',
-                                ]
-                                
-                                retweets = 0
-                                likes = 0
-                                for pattern in metric_patterns:
-                                    metrics_match = re.search(pattern, title)
-                                    if metrics_match:
-                                        try:
-                                            retweets = int(metrics_match.group(1))
-                                            likes = int(metrics_match.group(2))
-                                            break
-                                        except (ValueError, IndexError) as e:
-                                            logger.warning(f"Failed to parse metrics with pattern {pattern}: {str(e)}")
-                                            continue
-                                
-                                if content:
-                                    tweet_data = {
-                                        "content": content,
-                                        "metrics": {
-                                            "retweets": retweets,
-                                            "likes": likes
+                                    # Clean content
+                                    content = re.sub(r'<[^>]+>', '', content)
+                                    content = re.sub(r'\s+', ' ', content)
+                                    content = content.strip()
+                                    
+                                    if content and len(content) > 5:
+                                        tweet_data = {
+                                            "content": content,
+                                            "metrics": {
+                                                "retweets": retweets,
+                                                "likes": likes
+                                            }
                                         }
-                                    }
-                                    tweets.append(tweet_data)
-                                    logger.info(f"Extracted tweet: {tweet_data}")
+                                        tweets.append(tweet_data)
+                                        logger.info(f"Extracted tweet: {content[:100]}...")
+                                except Exception as e:
+                                    logger.error(f"Error processing tweet match: {str(e)}")
+                                    continue
                             
                             if tweets:
-                                logger.info(f"Successfully extracted {len(tweets)} tweets from RSS feed")
+                                logger.info(f"Successfully extracted {len(tweets)} tweets")
                                 break
                             else:
-                                logger.warning("No tweets found in RSS feed")
+                                logger.warning("No tweets found in response")
                                 
-                        except ET.ParseError as e:
-                            logger.error(f"Failed to parse RSS feed: {str(e)}")
-                            continue
                         except Exception as e:
-                            logger.error(f"Error processing RSS feed: {str(e)}")
+                            logger.error(f"Error processing response: {str(e)}")
                             continue
                     
             except httpx.ConnectError as e:

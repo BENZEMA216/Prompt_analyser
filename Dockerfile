@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir "uvicorn[standard]" && \
+    pip install --no-cache-dir "uvicorn[standard]" "httpx[http2]" && \
     rm -rf /root/.cache/pip/* && \
     rm -rf /root/.cache && \
     find /usr/local -type d -name "__pycache__" -exec rm -rf {} + && \

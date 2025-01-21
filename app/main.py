@@ -64,8 +64,8 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         """Check if instance is responding with detailed error logging."""
         try:
             url = f"{inst}/search?f=tweets&q=test"
-            # More lenient timeouts
-            quick_timeout = httpx.Timeout(5.0, connect=2.0, read=3.0)
+            # Even more lenient timeouts
+            quick_timeout = httpx.Timeout(10.0, connect=5.0, read=5.0)
             
             async with httpx.AsyncClient(
                 timeout=quick_timeout,
@@ -73,37 +73,41 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                 verify=False,
                 follow_redirects=True,
                 http2=False,  # Explicitly disable HTTP/2
-                transport=httpx.AsyncHTTPTransport(retries=2)  # Reduced retries for faster failure
+                transport=httpx.AsyncHTTPTransport(retries=1)  # Single retry for faster testing
             ) as client:
                 logger.info(f"Testing instance {inst}...")
                 try:
                     response = await client.get(url)
                     logger.info(f"Response from {inst}: status={response.status_code}, size={len(response.text)} bytes")
                     
+                    # Accept any 2xx status code
+                    if 200 <= response.status_code < 300:
+                        content = response.text.lower()
+                        logger.info(f"Content check for {inst}: length={len(content)}")
+                        
+                        # Super lenient content check - just make sure we got some HTML
+                        if len(content) > 50 and ('<html' in content or '<body' in content):
+                            logger.info(f"Successfully validated {inst}")
+                            return inst
+                        else:
+                            logger.warning(f"Instance {inst} returned invalid content: length={len(content)}")
+                            return None
+                            
+                    # Log specific error cases
                     if response.status_code == 429:
                         logger.warning(f"Rate limited by {inst}")
-                        return None
+                    elif response.status_code == 403:
+                        logger.warning(f"Access forbidden by {inst}")
+                    elif response.status_code == 404:
+                        logger.warning(f"Not found error from {inst}")
+                    elif response.status_code >= 500:
+                        logger.warning(f"Server error from {inst}: {response.status_code}")
+                    else:
+                        logger.warning(f"Unknown error from {inst}: {response.status_code}")
                         
-                    if response.status_code != 200:
-                        logger.warning(f"Instance {inst} failed with status {response.status_code}")
-                        if response.text:
-                            logger.warning(f"Error response from {inst}: {response.text[:200]}")
-                        return None
-                    
-                    content = response.text.lower()
-                    logger.info(f"Content check for {inst}: length={len(content)}")
-                    
-                    # More lenient content check
-                    if len(content) < 100:  # Suspiciously small response
-                        logger.warning(f"Instance {inst} returned suspiciously small response: {content}")
-                        return None
-                        
-                    if 'tweet' not in content and 'nitter' not in content:
-                        logger.warning(f"Instance {inst} returned invalid content type")
-                        return None
-                    
-                    logger.info(f"Successfully validated {inst}")
-                    return inst
+                    if response.text:
+                        logger.warning(f"Error response from {inst}: {response.text[:200]}")
+                    return None
                         
                 except httpx.TimeoutException as e:
                     logger.error(f"Timeout connecting to {inst}: {str(e)}")
@@ -113,6 +117,9 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     return None
                 except httpx.RequestError as e:
                     logger.error(f"Request error for {inst}: {str(e)}")
+                    return None
+                except Exception as e:
+                    logger.error(f"Unexpected error checking {inst}: {str(e)}")
                     return None
                     
         except Exception as e:

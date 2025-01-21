@@ -19,14 +19,14 @@ def get_cached_instances(timestamp: int = 0) -> List[Tuple[str, float]]:
     return [
         ("https://nitter.net", time.time()),
         ("https://nitter.privacydev.net", time.time()),
-        ("https://nitter.cz", time.time()),
-        ("https://nitter.unixfox.eu", time.time()),
-        ("https://nitter.moomoo.me", time.time()),
-        ("https://nitter.1d4.us", time.time()),
-        ("https://nitter.kavin.rocks", time.time()),
-        ("https://nitter.weiler.rocks", time.time()),
-        ("https://nitter.sethforprivacy.com", time.time()),
-        ("https://nitter.cutelab.space", time.time())
+        ("https://nitter.fdn.fr", time.time()),
+        ("https://nitter.poast.org", time.time()),
+        ("https://nitter.mint.lgbt", time.time()),
+        ("https://nitter.woodland.cafe", time.time()),
+        ("https://nitter.rawbit.ninja", time.time()),
+        ("https://nitter.ktachibana.party", time.time()),
+        ("https://nitter.fly.dev", time.time()),
+        ("https://nitter.projectsegfau.lt", time.time())
     ]
 
 def get_instances() -> List[str]:
@@ -44,8 +44,8 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
     
-    # Very aggressive timeouts
-    timeout = httpx.Timeout(5.0, connect=2.0, read=3.0)
+    # More reasonable timeouts
+    timeout = httpx.Timeout(15.0, connect=5.0, read=10.0)
     limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
     
     # Enhanced headers to look more like a real browser
@@ -103,19 +103,17 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         content = response.text.lower()
                         logger.info(f"Content check for {inst}: length={len(content)}")
                         
-                        # Enhanced content validation
+                        # Less strict content validation
                         required_elements = [
                             'tweet-content',
-                            'timeline',
-                            'tweets',
-                            'search'
+                            'timeline'
                         ]
                         
-                        if len(content) < 1000:  # Too short to be a real search page
+                        if len(content) < 500:  # More lenient minimum size
                             logger.warning(f"Response too short from {inst}: {len(content)} bytes")
                             return None
                             
-                        if not all(element in content for element in required_elements):
+                        if not any(element in content for element in required_elements):
                             logger.warning(f"Missing required elements in response from {inst}")
                             return None
                             

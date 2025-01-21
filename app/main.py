@@ -36,8 +36,8 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     }
     
     try:
-        # Direct Twitter web search
-        search_url = f"https://twitter.com/search?q={quote_plus(query)}&f=live"
+        # Direct X (Twitter) web search with additional parameters
+        search_url = f"https://x.com/search?q={quote_plus(query)}%20-filter%3Areplies&f=live&pf=1"
         logger.info(f"Searching Twitter at: {search_url}")
         
         async with httpx.AsyncClient(timeout=timeout, headers=headers, follow_redirects=True) as client:
@@ -52,87 +52,10 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             
             content = response.text
             logger.info(f"Received response of {len(content)} bytes")
+            logger.debug(f"Response content preview: {content[:500]}...")
             
-            # Extract tweets using a more robust pattern for Twitter's HTML structure
-            tweet_pattern = r'<article[^>]*>.*?<div[^>]*>(?P<content>.*?)</div>.*?<div[^>]*>(?P<metrics>.*?)</div>.*?</article>'
-            matches = list(re.finditer(tweet_pattern, content, re.DOTALL | re.IGNORECASE))
-            
-            if not matches:
-                logger.warning("No tweets found in response")
-                return []
-                
-            logger.info(f"Found {len(matches)} potential tweets")
-            
-            # Process matches
-            for match in matches[:max_results]:
-                try:
-                    # Extract and clean content
-                    content = match.group('content')
-                    metrics_text = match.group('metrics')
-                    
-                    # Clean content
-                    content = re.sub(r'<[^>]+>', '', content)
-                    content = re.sub(r'\s+', ' ', content)
-                    content = content.strip()
-                    
-                    if not content or len(content) < 10:
-                        continue
-                    
-                    # Extract metrics with more flexible patterns
-                    retweets = re.search(r'(\d+)[^\d]*(?:Retweet|RT)', metrics_text)
-                    likes = re.search(r'(\d+)[^\d]*(?:Like|❤)', metrics_text)
-                    
-                    tweet_data = {
-                        "content": content,
-                        "metrics": {
-                            "retweets": int(retweets.group(1)) if retweets else 0,
-                            "likes": int(likes.group(1)) if likes else 0
-                        }
-                    }
-                    
-                    # Log the extracted data for debugging
-                    logger.info(f"Extracted tweet: {json.dumps(tweet_data, ensure_ascii=False)[:200]}...")
-                    tweets.append(tweet_data)
-                    
-                except Exception as e:
-                    logger.error(f"Error processing tweet: {str(e)}")
-                    continue
-            
-            return tweets
-            
-    except httpx.TimeoutException:
-        logger.error("Request timed out")
-        raise HTTPException(
-            status_code=503,
-            detail="Request timed out"
-        )
-    except Exception as e:
-        logger.error(f"Error fetching tweets: {str(e)}")
-        raise HTTPException(
-            status_code=503,
-            detail="Failed to fetch tweets"
-        )
-    
-    try:
-        # Direct Twitter web search
-        search_url = f"https://twitter.com/search?q={quote_plus(query)}&f=live"
-        logger.info(f"Searching Twitter at: {search_url}")
-        
-        async with httpx.AsyncClient(timeout=timeout, headers=headers, follow_redirects=True) as client:
-            response = await client.get(search_url)
-            
-            if response.status_code != 200:
-                logger.error(f"Twitter search failed with status {response.status_code}")
-                raise HTTPException(
-                    status_code=503,
-                    detail="Tweet search service returned an error"
-                )
-            
-            content = response.text
-            logger.info(f"Received response of {len(content)} bytes")
-            
-            # Extract tweets using a more robust pattern for Twitter's HTML structure
-            tweet_pattern = r'<article[^>]*>.*?<div[^>]*>(?P<content>.*?)</div>.*?<div[^>]*>(?P<metrics>.*?)</div>.*?</article>'
+            # Extract tweets using x.com's HTML structure with more specific selectors
+            tweet_pattern = r'<div[^>]*data-testid="cellInnerDiv"[^>]*>.*?<div[^>]*data-testid="tweetText"[^>]*>(.*?)</div>.*?<div[^>]*aria-label="(\d+)[^"]*retweet[^"]*".*?<div[^>]*aria-label="(\d+)[^"]*like'
             matches = list(re.finditer(tweet_pattern, content, re.DOTALL | re.IGNORECASE))
             
             if not matches:
@@ -179,16 +102,6 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             
     except httpx.TimeoutException:
         logger.error("Request timed out")
-        raise HTTPException(
-            status_code=503,
-            detail="Request timed out"
-        )
-    except Exception as e:
-        logger.error(f"Error fetching tweets: {str(e)}")
-        raise HTTPException(
-            status_code=503,
-            detail="Failed to fetch tweets"
-        )
         raise HTTPException(
             status_code=503,
             detail="Request timed out"

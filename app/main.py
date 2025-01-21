@@ -19,20 +19,24 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     # Optimized timeouts for Twitter's web interface
     timeout = httpx.Timeout(20.0, connect=5.0, read=15.0)
     
-    # Enhanced headers to look more like a real browser
+    # Enhanced headers to look more like a modern browser
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
         'Accept-Encoding': 'gzip, deflate, br',
-        'DNT': '1',
+        'Cache-Control': 'max-age=0',
         'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
+        'Cookie': '_ga=GA1.1.1234567890.1234567890',
+        'Dnt': '1',
+        'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
         'Sec-Fetch-Dest': 'document',
         'Sec-Fetch-Mode': 'navigate',
         'Sec-Fetch-Site': 'none',
         'Sec-Fetch-User': '?1',
-        'Cache-Control': 'max-age=0'
+        'Upgrade-Insecure-Requests': '1'
     }
     
     try:
@@ -52,10 +56,13 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             
             content = response.text
             logger.info(f"Received response of {len(content)} bytes")
-            logger.debug(f"Response content preview: {content[:500]}...")
+            # Log more details about the response
+            logger.info(f"Response content length: {len(content)} bytes")
+            logger.info(f"Response content preview: {content[:1000]}...")
+            logger.info("Looking for tweet patterns...")
             
-            # Extract tweets using x.com's HTML structure with more specific selectors
-            tweet_pattern = r'<div[^>]*data-testid="cellInnerDiv"[^>]*>.*?<div[^>]*data-testid="tweetText"[^>]*>(.*?)</div>.*?<div[^>]*aria-label="(\d+)[^"]*retweet[^"]*".*?<div[^>]*aria-label="(\d+)[^"]*like'
+            # Extract tweets using x.com's HTML structure with bilingual support
+            tweet_pattern = r'<article[^>]*>.*?<div[^>]*data-testid="tweetText"[^>]*>(.*?)</div>.*?<div[^>]*aria-label="(\d+)\s*(?:Retweet|转推)".*?<div[^>]*aria-label="(\d+)\s*(?:Like|喜欢)"'
             matches = list(re.finditer(tweet_pattern, content, re.DOTALL | re.IGNORECASE))
             
             if not matches:

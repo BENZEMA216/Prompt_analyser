@@ -215,12 +215,34 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     detail="Tweet search service returned an error"
                 )
             
-            # Simple tweet extraction pattern
-            tweet_pattern = r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span[^>]*>(\d+)</span>.*?<span[^>]*>(\d+)</span>'
-            matches = list(re.finditer(tweet_pattern, response.text, re.DOTALL | re.IGNORECASE))
+            # More lenient tweet extraction pattern with detailed logging
+            logger.info(f"Response content length: {len(response.text)} bytes")
+            logger.info(f"First 500 chars of response: {response.text[:500]}")
+            
+            # Try different tweet patterns from most specific to least specific
+            tweet_patterns = [
+                # Original pattern
+                r'<div class="tweet-content[^>]*>(.*?)</div>.*?<div class="tweet-stats[^>]*>.*?<span[^>]*>(\d+)</span>.*?<span[^>]*>(\d+)</span>',
+                # More lenient pattern - just look for tweet content
+                r'<div class="tweet-content[^>]*>(.*?)</div>',
+                # Super lenient pattern - any div with content
+                r'<div[^>]*class="[^"]*tweet[^"]*"[^>]*>(.*?)</div>'
+            ]
+            
+            matches = []
+            for pattern in tweet_patterns:
+                logger.info(f"Trying pattern: {pattern}")
+                current_matches = list(re.finditer(pattern, response.text, re.DOTALL | re.IGNORECASE))
+                if current_matches:
+                    logger.info(f"Found {len(current_matches)} matches with pattern")
+                    matches = current_matches
+                    break
             
             if not matches:
-                logger.warning("No tweets found in response")
+                logger.warning("No tweets found with any pattern")
+                # Log some HTML structure information
+                structure_sample = re.sub(r'>\s+<', '><', response.text[:1000])  # Clean up whitespace
+                logger.info(f"HTML structure sample: {structure_sample}")
                 return []
             
             logger.info(f"Found {len(matches)} tweets")

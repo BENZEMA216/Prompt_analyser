@@ -1,37 +1,52 @@
 from fastapi import FastAPI, HTTPException
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 import httpx
 import asyncio
 import logging
 import re
+import time
 from urllib.parse import urlencode, quote_plus
+from functools import lru_cache
 
 app = FastAPI()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]]:
-    """Fetch tweets from Nitter with improved error handling and parallel instance checking."""
-    # Extended list of Nitter instances
-    instances = [
-        "https://nitter.net",
-        "https://nitter.privacydev.net",
-        "https://nitter.cz",
-        "https://nitter.unixfox.eu",
-        "https://nitter.moomoo.me",
-        "https://nitter.1d4.us",
-        "https://nitter.kavin.rocks",
-        "https://nitter.weiler.rocks",
-        "https://nitter.sethforprivacy.com",
-        "https://nitter.cutelab.space"
+# Cache working instances for 5 minutes
+@lru_cache(maxsize=1)
+def get_cached_instances(timestamp: int = 0) -> List[Tuple[str, float]]:
+    # Force cache invalidation every 5 minutes
+    return [
+        ("https://nitter.net", time.time()),
+        ("https://nitter.privacydev.net", time.time()),
+        ("https://nitter.cz", time.time()),
+        ("https://nitter.unixfox.eu", time.time()),
+        ("https://nitter.moomoo.me", time.time()),
+        ("https://nitter.1d4.us", time.time()),
+        ("https://nitter.kavin.rocks", time.time()),
+        ("https://nitter.weiler.rocks", time.time()),
+        ("https://nitter.sethforprivacy.com", time.time()),
+        ("https://nitter.cutelab.space", time.time())
     ]
+
+def get_instances() -> List[str]:
+    # Get timestamp rounded to 5 minute intervals
+    timestamp = int(time.time() / 300) * 300
+    instances = get_cached_instances(timestamp)
+    # Sort by last success time, newest first
+    sorted_instances = sorted(instances, key=lambda x: x[1], reverse=True)
+    return [inst[0] for inst in sorted_instances]
+
+async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    """Fetch tweets from Nitter with aggressive timeouts and partial results."""
+    instances = get_instances()
     tweets: List[Dict[str, Any]] = []
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
     
-    # Stricter timeouts for faster failure detection
-    timeout = httpx.Timeout(15.0, connect=5.0, read=10.0)
-    limits = httpx.Limits(max_keepalive_connections=10, max_connections=20)
+    # Very aggressive timeouts
+    timeout = httpx.Timeout(5.0, connect=2.0, read=3.0)
+    limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
     
     # Enhanced headers to look more like a real browser
     headers = {
@@ -79,24 +94,22 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.warning(f"Instance {inst} error: {str(e)}")
             return None
     
-    # Try instances in parallel
-    async def find_working_instance() -> str:
-        tasks = []
+    # Try instances sequentially with fast timeouts
+    async def find_working_instance() -> Optional[str]:
         for inst in instances:
-            tasks.append(check_instance(inst))
-        
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-        working_instances = [r for r in results if isinstance(r, str)]
-        
-        if not working_instances:
-            logger.error("All Nitter instances failed")
-            raise HTTPException(
-                status_code=503,
-                detail="Tweet search service is currently unavailable"
-            )
-        
-        # Return the first working instance
-        return working_instances[0]
+            try:
+                if result := await check_instance(inst):
+                    # Update instance success time
+                    timestamp = int(time.time() / 300) * 300
+                    cached = get_cached_instances(timestamp)
+                    updated = [(i[0], time.time() if i[0] == inst else i[1]) for i in cached]
+                    get_cached_instances.cache_clear()
+                    get_cached_instances(timestamp)  # Refresh cache with new times
+                    return result
+            except Exception as e:
+                logger.warning(f"Instance {inst} error: {str(e)}")
+                continue
+        return None
     
     # Find working instance
     instance = await find_working_instance()

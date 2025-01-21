@@ -61,16 +61,17 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
 
     # Simple instance check
     async def check_instance(inst: str) -> Optional[str]:
-        """Quick check if instance is responding."""
+        """Quick check if instance is responding with improved error handling."""
         try:
             url = f"{inst}/search?f=tweets&q=test"
-            quick_timeout = httpx.Timeout(5.0, connect=2.0)
+            quick_timeout = httpx.Timeout(3.0, connect=1.5)  # Even more aggressive timeouts
             
             async with httpx.AsyncClient(
                 timeout=quick_timeout,
                 headers=headers,
                 verify=False,
-                follow_redirects=True
+                follow_redirects=True,
+                http2=True  # Enable HTTP/2 for better performance
             ) as client:
                 logger.info(f"Testing instance {inst}...")
                 response = await client.get(url)
@@ -83,7 +84,8 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     logger.warning(f"Instance {inst} failed with status {response.status_code}")
                     return None
                 
-                if 'tweet-content' not in response.text:
+                content = response.text.lower()  # Case-insensitive check
+                if 'tweet-content' not in content and 'tweet' not in content:
                     logger.warning(f"Instance {inst} returned no tweet content")
                     return None
                 
@@ -128,15 +130,25 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.error(f"Instance {inst} failed with: {error}")
         return None
     
-    # Find working instance with enhanced error handling
-    instance = await find_working_instance()
+    # Find working instance with enhanced error handling and retry logic
+    retries = 2
+    instance = None
+    
+    for attempt in range(retries):
+        instance = await find_working_instance()
+        if instance:
+            break
+        if attempt < retries - 1:
+            logger.info(f"Retry attempt {attempt + 1}/{retries} to find working instance...")
+            await asyncio.sleep(1)  # Short delay between retries
+    
     if not instance:
-        logger.error("No working Nitter instances found. All instances failed or were unreachable.")
+        logger.error("No working Nitter instances found after all retry attempts.")
         raise HTTPException(
             status_code=503,
-            detail="No available tweet search service found. Please try again later."
+            detail="Tweet search service is temporarily unavailable. Please try again later."
         )
-        
+    
     try:
         # Make the search request with detailed logging
         params = {

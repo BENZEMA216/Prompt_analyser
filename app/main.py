@@ -65,14 +65,15 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         try:
             url = f"{inst}/search?f=tweets&q=test"
             # More lenient timeouts
-            quick_timeout = httpx.Timeout(10.0, connect=5.0, read=5.0)
+            quick_timeout = httpx.Timeout(15.0, connect=5.0, read=10.0)
             
             async with httpx.AsyncClient(
                 timeout=quick_timeout,
                 headers=headers,
                 verify=False,
                 follow_redirects=True,
-                http2=False  # Disable HTTP/2 to reduce complexity
+                http2=False,  # Explicitly disable HTTP/2
+                transport=httpx.AsyncHTTPTransport(retries=3)  # Add retries
             ) as client:
                 logger.info(f"Testing instance {inst}...")
                 try:
@@ -185,8 +186,16 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         full_url = f"{url}?{urlencode(params)}"
         logger.info(f"Attempting tweet search at: {full_url}")
         
-        async with httpx.AsyncClient(timeout=timeout, limits=limits, headers=headers) as client:
-            response = await client.get(full_url, follow_redirects=True)
+        async with httpx.AsyncClient(
+                timeout=timeout,
+                limits=limits,
+                headers=headers,
+                verify=False,
+                follow_redirects=True,
+                http2=False,  # Explicitly disable HTTP/2
+                transport=httpx.AsyncHTTPTransport(retries=3)  # Add retries
+            ) as client:
+            response = await client.get(full_url)
             
             if response.status_code != 200:
                 raise HTTPException(

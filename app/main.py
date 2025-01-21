@@ -94,10 +94,16 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.warning(f"Instance {inst} error: {str(e)}")
             return None
     
-    # Try instances sequentially with fast timeouts
+    # Enhanced instance finding with detailed error tracking
     async def find_working_instance() -> Optional[str]:
+        logger.info("Starting search for working Nitter instance...")
+        total_instances = len(instances)
+        failed_instances = 0
+        error_summary = {}
+        
         for inst in instances:
             try:
+                logger.info(f"Trying instance {inst} ({failed_instances + 1}/{total_instances})")
                 if result := await check_instance(inst):
                     # Update instance success time
                     timestamp = int(time.time() / 300) * 300
@@ -105,24 +111,41 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     updated = [(i[0], time.time() if i[0] == inst else i[1]) for i in cached]
                     get_cached_instances.cache_clear()
                     get_cached_instances(timestamp)  # Refresh cache with new times
+                    logger.info(f"Successfully found working instance: {inst}")
                     return result
+                failed_instances += 1
+                if inst not in error_summary:
+                    error_summary[inst] = "Failed instance check"
             except Exception as e:
-                logger.warning(f"Instance {inst} error: {str(e)}")
+                failed_instances += 1
+                error_summary[inst] = str(e)
+                logger.error(f"Error with instance {inst}: {str(e)}")
                 continue
+        
+        # Log detailed error summary
+        logger.error(f"All instances failed ({failed_instances}/{total_instances})")
+        for inst, error in error_summary.items():
+            logger.error(f"Instance {inst} failed with: {error}")
         return None
     
-    # Find working instance
+    # Find working instance with enhanced error handling
     instance = await find_working_instance()
+    if not instance:
+        logger.error("No working Nitter instances found. All instances failed or were unreachable.")
+        raise HTTPException(
+            status_code=503,
+            detail="No available tweet search service found. Please try again later."
+        )
         
     try:
-        # Make the search request
+        # Make the search request with detailed logging
         params = {
             "f": "tweets",
             "q": quote_plus(query)
         }
         url = f"{instance}/search"
         full_url = f"{url}?{urlencode(params)}"
-        logger.info(f"Searching tweets at: {full_url}")
+        logger.info(f"Attempting tweet search at: {full_url}")
         
         async with httpx.AsyncClient(timeout=timeout, limits=limits, headers=headers) as client:
             response = await client.get(full_url, follow_redirects=True)

@@ -61,37 +61,69 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
 
     # Simple instance check
     async def check_instance(inst: str) -> Optional[str]:
-        """Check if instance is responding with detailed error logging."""
+        """Check if instance is responding with enhanced redirect and content validation."""
         try:
             url = f"{inst}/search?f=tweets&q=test"
-            # Even more lenient timeouts
             quick_timeout = httpx.Timeout(10.0, connect=5.0, read=5.0)
             
             async with httpx.AsyncClient(
                 timeout=quick_timeout,
                 headers=headers,
                 verify=False,
-                follow_redirects=True,
-                http2=False,  # Explicitly disable HTTP/2
-                transport=httpx.AsyncHTTPTransport(retries=1)  # Single retry for faster testing
+                follow_redirects=False,  # Don't follow redirects initially
+                http2=False,
+                transport=httpx.AsyncHTTPTransport(retries=1)
             ) as client:
                 logger.info(f"Testing instance {inst}...")
                 try:
+                    # First request - check for redirects
                     response = await client.get(url)
-                    logger.info(f"Response from {inst}: status={response.status_code}, size={len(response.text)} bytes")
+                    logger.info(f"Initial response from {inst}: status={response.status_code}")
                     
-                    # Accept any 2xx status code
+                    # Handle redirects (301, 302, 307, 308)
+                    if response.status_code in {301, 302, 307, 308}:
+                        redirect_url = response.headers.get('location', '')
+                        logger.warning(f"Instance {inst} redirected to: {redirect_url}")
+                        
+                        # Strict redirect validation
+                        allowed_domains = ['nitter.net', 'twitter.com']
+                        if not any(domain in redirect_url.lower() for domain in allowed_domains):
+                            logger.warning(f"Invalid redirect target: {redirect_url}")
+                            return None
+                            
+                        # If redirected to another Nitter instance, update the URL
+                        if 'nitter' in redirect_url.lower():
+                            url = redirect_url
+                    
+                    # Second request - follow redirects and validate content
+                    response = await client.get(url, follow_redirects=True)
+                    logger.info(f"Final response from {inst}: status={response.status_code}, size={len(response.text)} bytes")
+                    
                     if 200 <= response.status_code < 300:
                         content = response.text.lower()
                         logger.info(f"Content check for {inst}: length={len(content)}")
                         
-                        # Super lenient content check - just make sure we got some HTML
-                        if len(content) > 50 and ('<html' in content or '<body' in content):
-                            logger.info(f"Successfully validated {inst}")
-                            return inst
-                        else:
-                            logger.warning(f"Instance {inst} returned invalid content: length={len(content)}")
+                        # Enhanced content validation
+                        required_elements = [
+                            'tweet-content',
+                            'timeline',
+                            'tweets',
+                            'search'
+                        ]
+                        
+                        if len(content) < 1000:  # Too short to be a real search page
+                            logger.warning(f"Response too short from {inst}: {len(content)} bytes")
                             return None
+                            
+                        if not all(element in content for element in required_elements):
+                            logger.warning(f"Missing required elements in response from {inst}")
+                            return None
+                            
+                        logger.info(f"Successfully validated {inst}")
+                        return inst
+                    else:
+                        logger.warning(f"Instance {inst} returned invalid status: {response.status_code}")
+                        return None
                             
                     # Log specific error cases
                     if response.status_code == 429:
@@ -126,47 +158,37 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             logger.error(f"Unexpected error checking {inst}: {str(e)}")
             return None
     
-    # Enhanced instance finding with detailed error tracking
+    # Enhanced instance finding with sequential fallback
     async def find_working_instance() -> Optional[str]:
-        logger.info("Starting parallel search for working Nitter instance...")
+        logger.info("Starting search for working Nitter instance...")
         total_instances = len(instances)
         failed_count = 0
         error_summary: Dict[str, str] = {}
         
-        async def check_single_instance(inst: str) -> Tuple[str, bool, str]:
+        # Try instances one at a time to avoid overwhelming them
+        for inst in instances:
             try:
+                logger.info(f"Checking instance {inst} ({failed_count + 1}/{total_instances})")
                 if result := await check_instance(inst):
-                    return inst, True, ""
-                return inst, False, "Failed instance check"
+                    logger.info(f"Found working instance: {inst}")
+                    return inst
+                failed_count += 1
+                error_summary[inst] = "Failed instance check"
             except Exception as e:
                 error_msg = str(e)
                 logger.error(f"Error checking instance {inst}: {error_msg}")
-                return inst, False, error_msg
-        
-        # Check all instances in parallel with a timeout
-        tasks = [check_single_instance(inst) for inst in instances]
-        try:
-            results = await asyncio.gather(*tasks)
-            for inst, success, error in results:
-                if success:
-                    # Update instance success time
-                    timestamp = int(time.time() / 300) * 300
-                    cached = get_cached_instances(timestamp)
-                    updated = [(i[0], time.time() if i[0] == inst else i[1]) for i in cached]
-                    get_cached_instances.cache_clear()
-                    get_cached_instances(timestamp)  # Refresh cache with new times
-                    logger.info(f"Successfully found working instance: {inst}")
-                    return inst
                 failed_count += 1
-                error_summary[inst] = error
-        except Exception as e:
-            logger.error(f"Error in parallel instance check: {str(e)}")
-            return None
-
+                error_summary[inst] = error_msg
+            
+            # Short delay between instances
+            await asyncio.sleep(1)
+        
         # Log detailed error summary
-        logger.error(f"All instances failed ({failed_count}/{total_instances})")
-        for inst, error in error_summary.items():
-            logger.error(f"Instance {inst} failed with: {error}")
+        if failed_count == total_instances:
+            logger.error(f"All instances failed ({failed_count}/{total_instances})")
+            for inst, error in error_summary.items():
+                logger.error(f"Instance {inst} failed with: {error}")
+            return None
         return None
     
     # Find working instance with enhanced error handling and retry logic

@@ -65,7 +65,7 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         try:
             url = f"{inst}/search?f=tweets&q=test"
             # More lenient timeouts
-            quick_timeout = httpx.Timeout(15.0, connect=5.0, read=10.0)
+            quick_timeout = httpx.Timeout(5.0, connect=2.0, read=3.0)
             
             async with httpx.AsyncClient(
                 timeout=quick_timeout,
@@ -73,7 +73,7 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                 verify=False,
                 follow_redirects=True,
                 http2=False,  # Explicitly disable HTTP/2
-                transport=httpx.AsyncHTTPTransport(retries=3)  # Add retries
+                transport=httpx.AsyncHTTPTransport(retries=2)  # Reduced retries for faster failure
             ) as client:
                 logger.info(f"Testing instance {inst}...")
                 try:
@@ -118,22 +118,30 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
         except Exception as e:
             logger.error(f"Unexpected error checking {inst}: {str(e)}")
             return None
-                
-        except Exception as e:
-            logger.warning(f"Instance {inst} error: {str(e)}")
-            return None
     
     # Enhanced instance finding with detailed error tracking
     async def find_working_instance() -> Optional[str]:
-        logger.info("Starting search for working Nitter instance...")
+        logger.info("Starting parallel search for working Nitter instance...")
         total_instances = len(instances)
-        failed_instances = 0
-        error_summary = {}
+        failed_count = 0
+        error_summary: Dict[str, str] = {}
         
-        for inst in instances:
+        async def check_single_instance(inst: str) -> Tuple[str, bool, str]:
             try:
-                logger.info(f"Trying instance {inst} ({failed_instances + 1}/{total_instances})")
                 if result := await check_instance(inst):
+                    return inst, True, ""
+                return inst, False, "Failed instance check"
+            except Exception as e:
+                error_msg = str(e)
+                logger.error(f"Error checking instance {inst}: {error_msg}")
+                return inst, False, error_msg
+        
+        # Check all instances in parallel with a timeout
+        tasks = [check_single_instance(inst) for inst in instances]
+        try:
+            results = await asyncio.gather(*tasks)
+            for inst, success, error in results:
+                if success:
                     # Update instance success time
                     timestamp = int(time.time() / 300) * 300
                     cached = get_cached_instances(timestamp)
@@ -141,18 +149,15 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                     get_cached_instances.cache_clear()
                     get_cached_instances(timestamp)  # Refresh cache with new times
                     logger.info(f"Successfully found working instance: {inst}")
-                    return result
-                failed_instances += 1
-                if inst not in error_summary:
-                    error_summary[inst] = "Failed instance check"
-            except Exception as e:
-                failed_instances += 1
-                error_summary[inst] = str(e)
-                logger.error(f"Error with instance {inst}: {str(e)}")
-                continue
-        
+                    return inst
+                failed_count += 1
+                error_summary[inst] = error
+        except Exception as e:
+            logger.error(f"Error in parallel instance check: {str(e)}")
+            return None
+
         # Log detailed error summary
-        logger.error(f"All instances failed ({failed_instances}/{total_instances})")
+        logger.error(f"All instances failed ({failed_count}/{total_instances})")
         for inst, error in error_summary.items():
             logger.error(f"Instance {inst} failed with: {error}")
         return None

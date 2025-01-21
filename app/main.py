@@ -18,15 +18,15 @@ def get_cached_instances(timestamp: int = 0) -> List[Tuple[str, float]]:
     # Force cache invalidation every 5 minutes
     return [
         ("https://nitter.net", time.time()),
-        ("https://nitter.privacydev.net", time.time()),
-        ("https://nitter.fdn.fr", time.time()),
-        ("https://nitter.poast.org", time.time()),
-        ("https://nitter.mint.lgbt", time.time()),
-        ("https://nitter.woodland.cafe", time.time()),
-        ("https://nitter.rawbit.ninja", time.time()),
-        ("https://nitter.ktachibana.party", time.time()),
-        ("https://nitter.fly.dev", time.time()),
-        ("https://nitter.projectsegfau.lt", time.time())
+        ("https://nitter.1d4.us", time.time()),
+        ("https://nitter.unixfox.eu", time.time()),
+        ("https://nitter.moomoo.me", time.time()),
+        ("https://nitter.weiler.rocks", time.time()),
+        ("https://nitter.sethforprivacy.com", time.time()),
+        ("https://nitter.cutelab.space", time.time()),
+        ("https://nitter.freedit.eu", time.time()),
+        ("https://nitter.twei.space", time.time()),
+        ("https://nitter.inpt.fr", time.time())
     ]
 
 def get_instances() -> List[str]:
@@ -44,9 +44,9 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
     
     logger.info(f"Starting tweet search with query: {query}, max_results: {max_results}")
     
-    # More reasonable timeouts
-    timeout = httpx.Timeout(15.0, connect=5.0, read=10.0)
-    limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
+    # Aggressive timeouts for parallel checking
+    timeout = httpx.Timeout(30.0, connect=10.0, read=20.0)
+    limits = httpx.Limits(max_keepalive_connections=10, max_connections=20)
     
     # Enhanced headers to look more like a real browser
     headers = {
@@ -103,18 +103,14 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
                         content = response.text.lower()
                         logger.info(f"Content check for {inst}: length={len(content)}")
                         
-                        # Less strict content validation
-                        required_elements = [
-                            'tweet-content',
-                            'timeline'
-                        ]
-                        
-                        if len(content) < 500:  # More lenient minimum size
+                        # Extremely lenient content validation
+                        if len(content) < 50:  # Bare minimum size check
                             logger.warning(f"Response too short from {inst}: {len(content)} bytes")
                             return None
                             
-                        if not any(element in content for element in required_elements):
-                            logger.warning(f"Missing required elements in response from {inst}")
+                        # Only check for basic tweet indicator
+                        if 'tweet' not in content.lower():
+                            logger.warning(f"No tweet indicator found in response from {inst}")
                             return None
                             
                         logger.info(f"Successfully validated {inst}")
@@ -189,17 +185,27 @@ async def fetch_tweets(query: str, max_results: int = 10) -> List[Dict[str, Any]
             return None
         return None
     
-    # Find working instance with enhanced error handling and retry logic
-    retries = 2
+    # Find working instance with parallel checking
     instance = None
     
-    for attempt in range(retries):
-        instance = await find_working_instance()
-        if instance:
+    # Try all instances in parallel
+    async def check_instance_wrapper(inst):
+        try:
+            return await check_instance(inst)
+        except Exception as e:
+            logger.error(f"Error checking {inst}: {str(e)}")
+            return None
+    
+    # Check all instances simultaneously
+    instances = get_instances()
+    tasks = [check_instance_wrapper(inst) for inst in instances]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    
+    # Use the first working instance
+    for result in results:
+        if result and isinstance(result, str):
+            instance = result
             break
-        if attempt < retries - 1:
-            logger.info(f"Retry attempt {attempt + 1}/{retries} to find working instance...")
-            await asyncio.sleep(1)  # Short delay between retries
     
     if not instance:
         logger.error("No working Nitter instances found after all retry attempts.")

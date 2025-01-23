@@ -38,6 +38,13 @@ def login(driver, email, password):
         driver.get("https://dev.runwayml.com/")
         wait = WebDriverWait(driver, 20)
         
+        # Click the initial login button using JavaScript
+        logger.info("Clicking initial login button...")
+        login_button = wait.until(EC.presence_of_element_located((By.XPATH, "//button[.//span[text()='Login']]")))
+        driver.execute_script("arguments[0].scrollIntoView(true);", login_button)
+        time.sleep(1)  # Wait for scroll to complete
+        driver.execute_script("arguments[0].click();", login_button)
+        
         # Wait for login form and input fields
         logger.info("Waiting for login form...")
         email_field = wait.until(EC.presence_of_element_located((By.NAME, "email")))

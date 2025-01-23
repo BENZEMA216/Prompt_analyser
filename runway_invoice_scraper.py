@@ -1,13 +1,14 @@
 import os
 import time
 import logging
+import traceback
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
+from webdriver_manager.firefox import GeckoDriverManager
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 # Set up logging
@@ -18,45 +19,34 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def setup_driver():
-    """Set up and return a Chrome WebDriver instance with appropriate options."""
+    """Set up and return a Firefox WebDriver instance with appropriate options."""
     try:
-        # Create a unique temporary directory for Chrome data
-        temp_dir = f"/tmp/chrome_data_{int(time.time())}"
-        os.makedirs(temp_dir, exist_ok=True)
-        logger.info(f"Created temporary directory: {temp_dir}")
+        # Set up Firefox options
+        firefox_options = Options()
+        firefox_options.set_preference("browser.download.folderList", 2)
+        firefox_options.set_preference("browser.download.manager.showWhenStarting", False)
+        firefox_options.set_preference("browser.download.dir", os.path.join(os.getcwd(), "invoices"))
+        firefox_options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/pdf")
+        firefox_options.set_preference("pdfjs.disabled", True)
         
-        chrome_options = Options()
-        # chrome_options.add_argument('--headless')  # Disable headless for debugging
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.add_argument('--window-size=1920,1080')
-        chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument('--disable-extensions')
-        chrome_options.add_argument(f'--user-data-dir={temp_dir}')
-        chrome_options.add_argument('--disable-software-rasterizer')
-        chrome_options.add_argument('--disable-browser-side-navigation')
-        chrome_options.add_argument('--disable-infobars')
+        # Additional stability options
+        firefox_options.set_preference("dom.webnotifications.enabled", False)
+        firefox_options.set_preference("app.update.auto", False)
+        firefox_options.set_preference("app.update.enabled", False)
         
-        # Add experimental options
-        chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_experimental_option('prefs', {
-            "download.default_directory": os.path.join(os.getcwd(), "invoices"),
-            "download.prompt_for_download": False,
-            "download.directory_upgrade": True,
-            "safebrowsing.enabled": True,
-            "credentials_enable_service": False,
-            "profile.password_manager_enabled": False
-        })
+        # Set up Firefox service
+        logger.info("Setting up Firefox WebDriver...")
+        service = Service(GeckoDriverManager().install())
         
-        logger.info("Setting up Chrome WebDriver...")
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-        logger.info("Chrome WebDriver setup completed successfully")
+        # Create driver instance
+        driver = webdriver.Firefox(service=service, options=firefox_options)
+        driver.set_window_size(1920, 1080)
+        logger.info("Firefox WebDriver setup completed successfully")
         return driver
         
     except Exception as e:
-        logger.error(f"Error setting up Chrome WebDriver: {str(e)}")
+        logger.error(f"Error setting up Firefox WebDriver: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
         raise
 
 def login(driver, email, password):

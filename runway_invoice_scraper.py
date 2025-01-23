@@ -18,23 +18,46 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def setup_driver():
-    chrome_options = Options()
-    # chrome_options.add_argument('--headless')  # Disable headless for debugging
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
-    chrome_options.add_argument('--window-size=1920,1080')  # Set window size
-    chrome_options.add_argument('--disable-gpu')  # Disable GPU hardware acceleration
-    chrome_options.add_argument('--disable-extensions')  # Disable extensions
-    chrome_options.add_argument(f'--user-data-dir=/tmp/chrome-data-{time.time()}')  # Unique user data directory
-    chrome_options.add_experimental_option('prefs', {
-        "download.default_directory": os.path.join(os.getcwd(), "invoices"),
-        "download.prompt_for_download": False,
-        "download.directory_upgrade": True,
-        "safebrowsing.enabled": True
-    })
-    
-    service = Service(ChromeDriverManager().install())
-    return webdriver.Chrome(service=service, options=chrome_options)
+    """Set up and return a Chrome WebDriver instance with appropriate options."""
+    try:
+        # Create a unique temporary directory for Chrome data
+        temp_dir = f"/tmp/chrome_data_{int(time.time())}"
+        os.makedirs(temp_dir, exist_ok=True)
+        logger.info(f"Created temporary directory: {temp_dir}")
+        
+        chrome_options = Options()
+        # chrome_options.add_argument('--headless')  # Disable headless for debugging
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--window-size=1920,1080')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--disable-extensions')
+        chrome_options.add_argument(f'--user-data-dir={temp_dir}')
+        chrome_options.add_argument('--disable-software-rasterizer')
+        chrome_options.add_argument('--disable-browser-side-navigation')
+        chrome_options.add_argument('--disable-infobars')
+        
+        # Add experimental options
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+        chrome_options.add_experimental_option('prefs', {
+            "download.default_directory": os.path.join(os.getcwd(), "invoices"),
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True,
+            "credentials_enable_service": False,
+            "profile.password_manager_enabled": False
+        })
+        
+        logger.info("Setting up Chrome WebDriver...")
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        logger.info("Chrome WebDriver setup completed successfully")
+        return driver
+        
+    except Exception as e:
+        logger.error(f"Error setting up Chrome WebDriver: {str(e)}")
+        raise
 
 def login(driver, email, password):
     logger.info("Attempting to log in...")
@@ -135,13 +158,37 @@ def check_for_captcha(driver):
     except:
         return False
 
+def cleanup_temp_dir(temp_dir):
+    """Clean up temporary Chrome data directory."""
+    try:
+        if os.path.exists(temp_dir):
+            import shutil
+            shutil.rmtree(temp_dir)
+            logger.info(f"Cleaned up temporary directory: {temp_dir}")
+    except Exception as e:
+        logger.warning(f"Failed to clean up temporary directory: {str(e)}")
+
 def main():
-    email = "dingjizheng@bytedance.com"
-    password = "Dreamina@2025"
+    # Get credentials from environment variables
+    email = os.getenv('RUNWAY_EMAIL')
+    password = os.getenv('RUNWAY_PASSWORD')
+    
+    if not email or not password:
+        raise ValueError("RUNWAY_EMAIL and RUNWAY_PASSWORD environment variables must be set")
     
     logger.info("Starting invoice download script...")
     driver = None
+    temp_dir = None
     try:
+        # Kill any existing Chrome processes
+        os.system("pkill -f chrome")
+        os.system("pkill -f chromium")
+        time.sleep(2)  # Wait for processes to be killed
+        
+        # Create temp directory
+        temp_dir = f"/tmp/chrome_data_{int(time.time())}"
+        os.makedirs(temp_dir, exist_ok=True)
+        
         driver = setup_driver()
         
         # Attempt login
@@ -161,8 +208,14 @@ def main():
         raise
     finally:
         if driver:
-            driver.quit()
-            logger.info("Browser session closed.")
+            try:
+                driver.quit()
+                logger.info("Browser session closed.")
+            except Exception as e:
+                logger.warning(f"Error closing browser: {str(e)}")
+        
+        if temp_dir:
+            cleanup_temp_dir(temp_dir)
 
 if __name__ == "__main__":
     try:

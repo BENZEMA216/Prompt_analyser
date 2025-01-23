@@ -2,13 +2,12 @@ import os
 import time
 import logging
 import traceback
+import undetected_chromedriver as uc
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.firefox.service import Service
-from webdriver_manager.firefox import GeckoDriverManager
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 # Set up logging
@@ -19,33 +18,29 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def setup_driver():
-    """Set up and return a Firefox WebDriver instance with appropriate options."""
+    """Set up and return an undetected ChromeDriver instance."""
     try:
-        # Set up Firefox options
-        firefox_options = Options()
-        firefox_options.set_preference("browser.download.folderList", 2)
-        firefox_options.set_preference("browser.download.manager.showWhenStarting", False)
-        firefox_options.set_preference("browser.download.dir", os.path.join(os.getcwd(), "invoices"))
-        firefox_options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/pdf")
-        firefox_options.set_preference("pdfjs.disabled", True)
+        logger.info("Setting up undetected ChromeDriver...")
+        options = uc.ChromeOptions()
+        options.add_argument('--no-sandbox')
+        options.add_argument('--window-size=1920,1080')
         
-        # Additional stability options
-        firefox_options.set_preference("dom.webnotifications.enabled", False)
-        firefox_options.set_preference("app.update.auto", False)
-        firefox_options.set_preference("app.update.enabled", False)
-        
-        # Set up Firefox service
-        logger.info("Setting up Firefox WebDriver...")
-        service = Service(GeckoDriverManager().install())
+        # Configure download behavior
+        prefs = {
+            'download.default_directory': os.path.join(os.getcwd(), "invoices"),
+            'download.prompt_for_download': False,
+            'download.directory_upgrade': True,
+            'safebrowsing.enabled': True
+        }
+        options.add_experimental_option('prefs', prefs)
         
         # Create driver instance
-        driver = webdriver.Firefox(service=service, options=firefox_options)
-        driver.set_window_size(1920, 1080)
-        logger.info("Firefox WebDriver setup completed successfully")
+        driver = uc.Chrome(options=options)
+        logger.info("ChromeDriver setup completed successfully")
         return driver
         
     except Exception as e:
-        logger.error(f"Error setting up Firefox WebDriver: {str(e)}")
+        logger.error(f"Error setting up ChromeDriver: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise
 

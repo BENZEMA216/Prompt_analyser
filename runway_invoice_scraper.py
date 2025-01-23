@@ -23,6 +23,9 @@ def setup_driver():
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--window-size=1920,1080')  # Set window size
+    chrome_options.add_argument('--disable-gpu')  # Disable GPU hardware acceleration
+    chrome_options.add_argument('--disable-extensions')  # Disable extensions
+    chrome_options.add_argument(f'--user-data-dir=/tmp/chrome-data-{time.time()}')  # Unique user data directory
     chrome_options.add_experimental_option('prefs', {
         "download.default_directory": os.path.join(os.getcwd(), "invoices"),
         "download.prompt_for_download": False,

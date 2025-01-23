@@ -19,9 +19,10 @@ logger = logging.getLogger(__name__)
 
 def setup_driver():
     chrome_options = Options()
-    chrome_options.add_argument('--headless')  # Run in headless mode
+    # chrome_options.add_argument('--headless')  # Disable headless for debugging
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--window-size=1920,1080')  # Set window size
     chrome_options.add_experimental_option('prefs', {
         "download.default_directory": os.path.join(os.getcwd(), "invoices"),
         "download.prompt_for_download": False,
@@ -45,10 +46,14 @@ def login(driver, email, password):
         time.sleep(1)  # Wait for scroll to complete
         driver.execute_script("arguments[0].click();", login_button)
         
-        # Wait for login form and input fields
+        # Wait for URL to change after login button click
+        logger.info("Waiting for login page to load...")
+        wait.until(lambda driver: "auth" in driver.current_url.lower())
+        
+        # Wait for login form and input fields with more specific selectors
         logger.info("Waiting for login form...")
-        email_field = wait.until(EC.presence_of_element_located((By.NAME, "email")))
-        password_field = wait.until(EC.presence_of_element_located((By.NAME, "password")))
+        email_field = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']")))
+        password_field = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='password']")))
         
         # Input credentials
         logger.info("Entering credentials...")
